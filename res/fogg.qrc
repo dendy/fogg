@@ -1,0 +1,21 @@
+<RCC>
+  <qresource prefix="/">
+    <file>3rdparty/qt-logo.png</file>
+    <file>3rdparty/flac-logo.png</file>
+    <file>3rdparty/mpg123-logo.png</file>
+    <file>3rdparty/ogg-vorbis-logo.png</file>
+    <file>icons/preferences.png</file>
+    <file>icons/coin.png</file>
+    <file>icons/discard.png</file>
+    <file>icons/information.png</file>
+    <file>icons/edit.png</file>
+    <file>icons/minus.png</file>
+    <file>icons/plus.png</file>
+    <file>icons/stop.png</file>
+    <file>icons/start.png</file>
+    <file>icons/fogg-logo.png</file>
+  </qresource>
+  <qresource prefix="/license">
+    <file>../LICENSE.GPL3</file>
+  </qresource>
+</RCC>

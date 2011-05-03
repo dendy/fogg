@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>586</width>
+    <height>456</height>
+   </rect>
+  </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QVBoxLayout" name="verticalLayout_5">
+    <item>
+     <widget class="QGroupBox" name="targetGroupBox">
+      <property name="title">
+       <string>Target</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QWidget" name="targetComboBoxWidget" native="true">
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <property name="margin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QLabel" name="targetStaticLabel">
+              <property name="text">
+               <string>Target:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="targetComboBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="addTargetButton"/>
+         </item>
+         <item>
+          <widget class="QToolButton" name="removeTargetButton"/>
+         </item>
+         <item>
+          <widget class="QToolButton" name="renameTargetButton"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="targetPrependYearToAlbumCheckBox">
+           <property name="text">
+            <string>Prepend year to album</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="Line" name="line">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="staticEncodingQualityLabel">
+           <property name="text">
+            <string>Encoding quality:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="Fogg::EncodingQualityWidget" name="targetQualityWidget" native="true"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="staticTargetPathLabel">
+           <property name="text">
+            <string>Path:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="targetPathLineEdit"/>
+         </item>
+         <item>
+          <widget class="QToolButton" name="targetPathBrowseButton">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox">
+      <property name="title">
+       <string>Converter</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QTreeView" name="jobView">
+             <property name="verticalScrollBarPolicy">
+              <enum>Qt::ScrollBarAlwaysOn</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QProgressBar" name="totalProgressBar"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <widget class="QPushButton" name="addFilesButton"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="addDirectoryButton"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="removeSelectedButton"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="removeAllButton"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="unmarkButton"/>
+           </item>
+           <item>
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="jobBottomButtonsLayout">
+         <item>
+          <widget class="QPushButton" name="startConversionButton"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="stopConversionButton"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>586</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="actionAddFiles"/>
+    <addaction name="actionAddDirectory"/>
+    <addaction name="separator"/>
+    <addaction name="actionStartConversion"/>
+    <addaction name="actionStopConversion"/>
+    <addaction name="separator"/>
+    <addaction name="actionRemoveSelected"/>
+    <addaction name="actionRemoveAll"/>
+    <addaction name="actionUnmark"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>&amp;Settings</string>
+    </property>
+    <addaction name="actionPreferences"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actionDonate"/>
+    <addaction name="actionAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <addaction name="actionStayOnTop"/>
+    <addaction name="separator"/>
+    <addaction name="actionExpandAll"/>
+    <addaction name="actionCollapseAll"/>
+   </widget>
+   <widget class="QMenu" name="menuDevice">
+    <property name="title">
+     <string>&amp;Device</string>
+    </property>
+    <addaction name="actionAddTarget"/>
+    <addaction name="actionRemoveTarget"/>
+    <addaction name="actionRenameTarget"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuDevice"/>
+   <addaction name="menuSettings"/>
+   <addaction name="menuView"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <action name="actionQuit">
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="icon">
+    <iconset resource="../res/fogg.qrc">
+     <normaloff>:/icons/preferences.png</normaloff>:/icons/preferences.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Preferences...</string>
+   </property>
+   <property name="toolTip">
+    <string>Open application preferences.</string>
+   </property>
+  </action>
+  <action name="actionAddFiles">
+   <property name="text">
+    <string>Add &amp;Files...</string>
+   </property>
+   <property name="toolTip">
+    <string>Add media files to convert.</string>
+   </property>
+  </action>
+  <action name="actionAddDirectory">
+   <property name="text">
+    <string>Add &amp;Directory...</string>
+   </property>
+   <property name="toolTip">
+    <string>Add directory with media files to convert.</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="../res/fogg.qrc">
+     <normaloff>:/icons/information.png</normaloff>:/icons/information.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;About...</string>
+   </property>
+  </action>
+  <action name="actionDonate">
+   <property name="icon">
+    <iconset resource="../res/fogg.qrc">
+     <normaloff>:/icons/coin.png</normaloff>:/icons/coin.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Donate...</string>
+   </property>
+   <property name="toolTip">
+    <string>Make donation.</string>
+   </property>
+  </action>
+  <action name="actionRemoveSelected">
+   <property name="text">
+    <string>Remove Selected</string>
+   </property>
+  </action>
+  <action name="actionStayOnTop">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Stay on &amp;top</string>
+   </property>
+  </action>
+  <action name="actionExpandAll">
+   <property name="text">
+    <string>E&amp;xpand all</string>
+   </property>
+   <property name="toolTip">
+    <string>Expand all folders in Converter view.</string>
+   </property>
+  </action>
+  <action name="actionCollapseAll">
+   <property name="text">
+    <string>&amp;Collapse all</string>
+   </property>
+   <property name="toolTip">
+    <string>Collapse all folders in Converter view.</string>
+   </property>
+  </action>
+  <action name="actionStartConversion">
+   <property name="icon">
+    <iconset resource="../res/fogg.qrc">
+     <normaloff>:/icons/start.png</normaloff>:/icons/start.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Start</string>
+   </property>
+   <property name="toolTip">
+    <string>Start conversion.</string>
+   </property>
+  </action>
+  <action name="actionUnmark">
+   <property name="text">
+    <string>&amp;Unmark</string>
+   </property>
+   <property name="toolTip">
+    <string>Mark all files as unfinished</string>
+   </property>
+  </action>
+  <action name="actionRemoveAll">
+   <property name="text">
+    <string>Remove all</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove all files scheduled for conversion.</string>
+   </property>
+  </action>
+  <action name="actionStopConversion">
+   <property name="icon">
+    <iconset resource="../res/fogg.qrc">
+     <normaloff>:/icons/stop.png</normaloff>:/icons/stop.png</iconset>
+   </property>
+   <property name="text">
+    <string>S&amp;top</string>
+   </property>
+   <property name="toolTip">
+    <string>Stop conversion.</string>
+   </property>
+  </action>
+  <action name="actionAddTarget">
+   <property name="icon">
+    <iconset resource="../res/fogg.qrc">
+     <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Add Device...</string>
+   </property>
+   <property name="toolTip">
+    <string>Add new device.</string>
+   </property>
+  </action>
+  <action name="actionRemoveTarget">
+   <property name="icon">
+    <iconset resource="../res/fogg.qrc">
+     <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Remove Device...</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove current device.</string>
+   </property>
+  </action>
+  <action name="actionRenameTarget">
+   <property name="icon">
+    <iconset resource="../res/fogg.qrc">
+     <normaloff>:/icons/edit.png</normaloff>:/icons/edit.png</iconset>
+   </property>
+   <property name="text">
+    <string>Re&amp;name Device...</string>
+   </property>
+   <property name="toolTip">
+    <string>Rename current device.</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Fogg::EncodingQualityWidget</class>
+   <extends>QWidget</extends>
+   <header>EncodingQualityWidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../res/fogg.qrc"/>
+ </resources>
+ <connections/>
+</ui>
