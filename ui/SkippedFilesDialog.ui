@@ -18,6 +18,12 @@
      </item>
      <item>
       <widget class="QLabel" name="textLabel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="text">
         <string>Some files have been skipped to be added because they are conflicting with other files already populated in the list from different sources.
 
