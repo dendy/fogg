@@ -357,11 +357,11 @@ Converter::JobResultType Job::_runBody()
 			}
 			else
 			{
-				// uninterleave samples
-				float ** const buffer = vorbis_analysis_buffer( &vd, bytes/4 );
-
 				// each Vorbis sample is 2 byte float value
 				const int sampleCount = bytes/(2*channelCount);
+
+				// uninterleave samples
+				float ** const buffer = vorbis_analysis_buffer( &vd, sampleCount );
 
 				if ( channelCount == 2 )
 				{
