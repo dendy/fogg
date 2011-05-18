@@ -59,7 +59,7 @@ QStringList FormatManager::allAvailableFileExtensions() const
 
 
 FormatFile * FormatManager::_createFormatFileFromPlugins( const FormatPluginList & plugins,
-	const QString & fileName, const QByteArray & format )
+		const QString & fileName, const QString & format )
 {
 	QWriteLocker fileFormatsLocker( &fileFormatsMutex_ );
 
@@ -77,7 +77,7 @@ FormatFile * FormatManager::_createFormatFileFromPlugins( const FormatPluginList
 }
 
 
-FormatFile * FormatManager::createFormatFile( const QString & fileName, const QByteArray & format )
+FormatFile * FormatManager::createFormatFile( const QString & fileName, const QString & format )
 {
 	// lookup plugin by the given format name
 	if ( !format.isNull() )

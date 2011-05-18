@@ -254,7 +254,7 @@ Converter::JobResultType Job::_runBody()
 	if ( !destinationFile_.isOpen() )
 		return Converter::JobResult_WriteError;
 
-	sourceAudioFile_ = converter_->audioFormatManager()->createFormatFile( sourceFilePath(), QByteArray() );
+	sourceAudioFile_ = converter_->audioFormatManager()->createFormatFile( sourceFilePath(), QString() );
 	if ( !sourceAudioFile_ )
 		return Converter::JobResult_NotSupported;
 

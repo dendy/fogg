@@ -38,14 +38,14 @@ public:
 	QStringList availableFileExtensionsForFormat( const QString & format ) const;
 	QStringList allAvailableFileExtensions() const;
 
-	FormatFile * createFormatFile( const QString & fileName, const QByteArray & format );
+	FormatFile * createFormatFile( const QString & fileName, const QString & format );
 
 private:
 	typedef QList<FormatPlugin*> FormatPluginList;
 
 private:
 	FormatFile * _createFormatFileFromPlugins( const FormatPluginList & plugins,
-			const QString & fileName, const QByteArray & format );
+			const QString & fileName, const QString & format );
 	void _addAudioFormatPlugin( FormatPlugin * plugin );
 
 private:
