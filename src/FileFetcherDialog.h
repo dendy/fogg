@@ -34,10 +34,14 @@ signals:
 
 protected:
 	void closeEvent( QCloseEvent * e );
+	void changeEvent( QEvent * e );
 
 private slots:
 	void _abortButtonClicked();
 	void _autoHideTimerTriggered();
+
+private:
+	void _retranslateUi();
 
 private:
 	Ui::FileFetcherDialog ui_;

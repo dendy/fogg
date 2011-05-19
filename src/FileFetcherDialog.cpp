@@ -34,6 +34,8 @@ FileFetcherDialog::FileFetcherDialog( QWidget * const parent ) :
 	ui_.setupUi( this );
 
 	connect( ui_.buttonBox->button( QDialogButtonBox::Abort ), SIGNAL(clicked()), SLOT(_abortButtonClicked()) );
+
+	_retranslateUi();
 }
 
 
@@ -75,6 +77,20 @@ void FileFetcherDialog::closeEvent( QCloseEvent * const e )
 }
 
 
+void FileFetcherDialog::changeEvent( QEvent * const e )
+{
+	switch ( e->type() )
+	{
+	case QEvent::LanguageChange:
+		ui_.retranslateUi( this );
+		_retranslateUi();
+		break;
+	}
+
+	QDialog::changeEvent( e );
+}
+
+
 void FileFetcherDialog::_abortButtonClicked()
 {
 	emit aborted();
@@ -84,6 +100,12 @@ void FileFetcherDialog::_abortButtonClicked()
 void FileFetcherDialog::_autoHideTimerTriggered()
 {
 	close();
+}
+
+
+void FileFetcherDialog::_retranslateUi()
+{
+	setWindowTitle( Global::makeWindowTitle( tr( "Fetching files" ) ) );
 }
 
 
