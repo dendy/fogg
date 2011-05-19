@@ -5,6 +5,11 @@ cmake_minimum_required( VERSION 2.8 )
 project( Fogg )
 
 
+if ( "${CMAKE_BUILD_TYPE}" STREQUAL "" )
+	set( CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE )
+endif()
+
+
 # paths
 get_filename_component( Fogg_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE )
 set( Fogg_3RDPARTY_DIR "${Fogg_DIR}/3rdparty" )
