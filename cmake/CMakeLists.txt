@@ -79,7 +79,7 @@ fogg_setup_audio_format_plugin( Vorbis )
 fogg_setup_audio_format_plugin( Flac )
 fogg_setup_audio_format_plugin( Mp3 )
 
-set( Grim_BUILD_MODULE_TOOLS YES )
+set( Grim_BUILD_MODULE_TOOLS YES CACHE BOOL "" FORCE )
 set( GrimTools_LIBRARY_SHARED NO CACHE BOOL "" FORCE )
 
 mark_as_advanced( FORCE
