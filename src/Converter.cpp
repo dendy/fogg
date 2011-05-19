@@ -248,7 +248,8 @@ Converter::JobResultType Job::_runBody()
 			break;
 
 		foggWarning() << "Error opening destination file for write:" << destinationFilePath();
-		usleep( kOpenDestinationFileDelay * 1000 );
+
+		Global::msleep( kOpenDestinationFileDelay );
 	}
 
 	if ( !destinationFile_.isOpen() )

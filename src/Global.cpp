@@ -3,6 +3,10 @@
 
 #include <QFile>
 
+#ifdef Q_OS_WIN
+#include <windows.h>
+#endif
+
 
 
 
@@ -75,6 +79,17 @@ QStringList Global::fileFiltersForExtensions( const QStringList & extensions )
 	foreach ( const QString & extension, extensions )
 		filters << kExtensionFilterTemplate.arg( extension );
 	return filters;
+}
+
+
+void Global::msleep( const int ms )
+{
+#ifdef Q_OS_WIN
+	Sleep( uint(ms) );
+#else
+	struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
+	nanosleep( &ts, 0 );
+#endif
 }
 
 

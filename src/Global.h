@@ -49,6 +49,8 @@ public:
 	static bool checkResources();
 
 	static QStringList fileFiltersForExtensions( const QStringList & extensions );
+
+	static void msleep( int ms );
 };
 
 
