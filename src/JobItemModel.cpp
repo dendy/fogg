@@ -19,9 +19,23 @@ JobItemModel::Item::Item( ItemType _type ) :
 	parentItem = 0;
 	row = -1;
 
-	progress = 0;
 	state = State_Null;
 	result = Converter::JobResult_Null;
+}
+
+
+qreal JobItemModel::Item::progress() const
+{
+	switch ( type )
+	{
+	case Item_Dir:
+		return asDir()->totalProgress;
+	case Item_File:
+		return asFile()->totalProgress();
+	}
+
+	Q_ASSERT( false );
+	return 0;
 }
 
 
@@ -48,6 +62,7 @@ JobItemModel::DirItem::DirItem() :
 	Item( JobItemModel::Item_Dir )
 {
 	totalWeight = 0;
+	totalProgress = 0;
 }
 
 
@@ -58,14 +73,15 @@ void JobItemModel::DirItem::addChildItem( Item * const item )
 
 	const int itemWeight = item->weight();
 	const int newTotalWeight = totalWeight + itemWeight;
+	const qreal itemProgress = item->progress();
 	const qreal newProgress = newTotalWeight == 0 ? 0 :
-			qMax<qreal>( 0, progress*totalWeight + item->progress*itemWeight ) / newTotalWeight;
+			qMax<qreal>( 0, totalProgress*totalWeight + itemProgress*itemWeight ) / newTotalWeight;
 
 	const int wasWeight = totalWeight;
-	const qreal wasProgress = progress;
+	const qreal wasProgress = totalProgress;
 
 	totalWeight = newTotalWeight;
-	progress = newProgress;
+	totalProgress = newProgress;
 
 	childItems << item;
 	item->parentItem = this;
@@ -83,14 +99,15 @@ void JobItemModel::DirItem::removeChildItem( Item * const item )
 
 	const int itemWeight = item->weight();
 	const int newTotalWeight = totalWeight - itemWeight;
+	const qreal itemProgress = item->progress();
 	const qreal newProgress = newTotalWeight == 0 ? 0 :
-			qMax<qreal>( 0, progress*totalWeight - item->progress*itemWeight ) / newTotalWeight;
+			qMax<qreal>( 0, totalProgress*totalWeight - itemProgress*itemWeight ) / newTotalWeight;
 
 	const int wasWeight = totalWeight;
-	const qreal wasProgress = progress;
+	const qreal wasProgress = totalProgress;
 
 	totalWeight = newTotalWeight;
-	progress = newProgress;
+	totalProgress = newProgress;
 
 	for ( int i = item->row + 1; i < childItems.count(); ++i )
 	{
@@ -114,14 +131,17 @@ void JobItemModel::DirItem::childItemChanged( const Item * const item, const int
 
 	const int itemWeight = item->weight();
 	const int newTotalWeight = totalWeight + itemWeight - wasWeight;
+	const qreal itemProgress = item->progress();
 	const qreal newProgress = newTotalWeight == 0 ? 0 :
-			qMax<qreal>( 0, progress*totalWeight + item->progress*itemWeight - wasWeight*wasProgress ) / newTotalWeight;
+			qMax<qreal>( 0, totalProgress*totalWeight + itemProgress*itemWeight - wasWeight*wasProgress ) / newTotalWeight;
 
 	const int selfWasWeight = totalWeight;
-	const qreal selfWasProgress = progress;
+	const qreal selfWasProgress = totalProgress;
+
+	foggDebug() << item->name << wasProgress << itemProgress;
 
 	totalWeight = newTotalWeight;
-	progress = newProgress;
+	totalProgress = newProgress;
 
 	if ( parentItem )
 		parentItem->asDir()->childItemChanged( this, selfWasWeight, selfWasProgress );
@@ -146,10 +166,10 @@ void JobItemModel::DirItem::clearChildItems()
 	childItems.clear();
 
 	const int wasWeight = totalWeight;
-	const qreal wasProgress = progress;
+	const qreal wasProgress = totalProgress;
 
 	totalWeight = 0;
-	progress = 0;
+	totalProgress = 0;
 
 	if ( parentItem )
 		parentItem->asDir()->childItemChanged( this, wasWeight, wasProgress );
@@ -171,6 +191,13 @@ JobItemModel::FileItem::FileItem() :
 	Item( Item_File )
 {
 	jobId = 0;
+	conversionProgress = 0;
+}
+
+
+qreal JobItemModel::FileItem::totalProgress() const
+{
+	return result == Converter::JobResult_Null ? conversionProgress : 1.0;
 }
 
 
@@ -287,9 +314,8 @@ void JobItemModel::_setItemName( Item * const item, const QString & name )
 }
 
 
-void JobItemModel::_setItemProgress( Item * const item, const qreal progress )
+void JobItemModel::_setItemProgress( Item * const item )
 {
-	item->progress = progress;
 	item->modelProgress = QVariant();
 }
 
@@ -297,9 +323,15 @@ void JobItemModel::_setItemProgress( Item * const item, const qreal progress )
 void JobItemModel::_setItemStateAndResult( Item * const item, const StateType state, const int result )
 {
 	Q_ASSERT( state == State_Null || result == Converter::JobResult_Null );
+
+	const qreal wasProgress = item->progress();
+
 	item->state = state;
 	item->result = result;
 	item->modelState = QVariant();
+
+	if ( item->parentItem )
+		item->parentItem->childItemChanged( item, item->weight(), wasProgress );
 }
 
 
@@ -328,13 +360,13 @@ void JobItemModel::_updateItemModelProgress( const Item * const item ) const
 		else
 		{
 			// show progress in percents: 0..100%
-			const int percents = JobItemModel::progressToPercents( item->progress );
+			const int percents = JobItemModel::progressToPercents( item->asFile()->conversionProgress );
 			item->modelProgress = QVariant::fromValue( percents );
 		}
 		break;
 
 	case Item_Dir:
-		const int percents = JobItemModel::progressToPercents( item->progress );
+		const int percents = JobItemModel::progressToPercents( item->asDir()->totalProgress );
 		if ( percents == 0 )
 			item->modelProgress = QVariant::fromValue( QString() );
 		else
@@ -388,8 +420,8 @@ void JobItemModel::_updateItemModelState( const Item * const item ) const
 
 void JobItemModel::_changeFileItemProgress( FileItem * const fileItem, const qreal progress )
 {
-	const qreal wasProgress = fileItem->progress;
-	fileItem->progress = progress;
+	const qreal wasProgress = fileItem->progress();
+	fileItem->conversionProgress = progress;
 
 	fileItem->parentItem->childItemChanged( fileItem, 1, wasProgress );
 
@@ -399,7 +431,7 @@ void JobItemModel::_changeFileItemProgress( FileItem * const fileItem, const qre
 		emit itemProgressChanged();
 		progressChangedItem_ = 0;
 
-		_setItemProgress( item, item->progress );
+		_setItemProgress( item );
 
 		if ( item != rootItem_ )
 		{
@@ -796,6 +828,8 @@ void JobItemModel::setJobFinished( const int jobId, const int result )
 
 	if ( fileItem->result == Converter::JobResult_Done )
 		_changeFileItemProgress( fileItem, 1.0 );
+	else
+		_changeFileItemProgress( fileItem, fileItem->conversionProgress );
 }
 
 

@@ -519,9 +519,9 @@ QStringList MainWindow::_collectMediaFileFilters() const
 
 void MainWindow::_updateTotalProgressBar()
 {
-	const JobItemModel::DirItem * const item = jobItemModel_->itemForIndex( QModelIndex() )->asDir();
-	const int value = qBound( 0, qRound( item->progress*kMaxTotalProgressBarValue ), kMaxTotalProgressBarValue );
-	const int percents = JobItemModel::progressToPercents( item->progress );
+	const JobItemModel::DirItem * const rootItem = jobItemModel_->itemForIndex( QModelIndex() )->asDir();
+	const int value = qBound( 0, qRound( rootItem->totalProgress*kMaxTotalProgressBarValue ), kMaxTotalProgressBarValue );
+	const int percents = JobItemModel::progressToPercents( rootItem->totalProgress );
 	ui_.totalProgressBar->setValue( value );
 	ui_.totalProgressBar->setFormat( QString::fromLatin1( "%1 %" ).arg( percents ) );
 }

@@ -54,7 +54,6 @@ public:
 
 		// data
 		QString name;
-		qreal progress;
 		StateType state;
 		int result;
 
@@ -69,6 +68,8 @@ public:
 		const FileItem * asFile() const;
 		FileItem * asFile();
 
+		qreal progress() const;
+
 		int weight() const;
 
 		void destroy();
@@ -79,6 +80,8 @@ public:
 	{
 	public:
 		DirItem();
+
+		qreal totalProgress;
 
 		QList<Item*> childItems;
 		int totalWeight;
@@ -96,11 +99,16 @@ public:
 	public:
 		FileItem();
 
+		qreal conversionProgress;
+
 		QString sourcePath;
 		QString basePath;
 		QString relativeDestinationPath;
 
 		int jobId;
+
+	public:
+		qreal totalProgress() const;
 	};
 
 
@@ -152,7 +160,7 @@ private:
 	QModelIndex _indexForItem( Item * item, int column ) const;
 
 	void _setItemName( Item * item, const QString & name );
-	void _setItemProgress( Item * item, qreal progress );
+	void _setItemProgress( Item * item );
 	void _setItemStateAndResult( Item * item, StateType state, int result );
 
 	void _updateItemModelName( const Item * item ) const;
