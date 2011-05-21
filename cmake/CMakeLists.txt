@@ -102,6 +102,9 @@ add_subdirectory( "${Fogg_3RDPARTY_DIR}/grim/cmake" "grim" )
 
 # Qt
 find_package( Qt4 REQUIRED )
+if ( WIN32 )
+	set( QT_USE_QTMAIN YES )
+endif()
 include( "${QT_USE_FILE}" )
 
 
@@ -137,7 +140,7 @@ include_directories(
 
 
 # definitions
-add_definitions( -DGRIM_TOOLS_STATIC )
+add_definitions( -DGRIM_TOOLS_STATIC -DGRIM_AUDIO_STATIC )
 
 if ( Fogg_DEBUG )
 	add_definitions( -DFOGG_DEBUG -DGRIM_AUDIO_DEBUG -DGRIM_TOOLS_DEBUG )
@@ -196,7 +199,7 @@ add_executable( Fogg ${Fogg_UI_HEADERS} ${Fogg_ALL_SOURCES} )
 
 
 # link
-target_link_libraries( Fogg ${QT_LIBRARIES} ${Ogg_LIBRARIES} ${Vorbis_LIBRARIES} ${Grim_LIBRARIES} )
+target_link_libraries( Fogg ${Grim_LIBRARIES} ${QT_LIBRARIES} ${Ogg_LIBRARIES} ${Vorbis_LIBRARIES} )
 
 
 # precompiled
