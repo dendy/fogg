@@ -8,6 +8,7 @@ find_package( Qt4 REQUIRED )
 set( QT_DONT_USE_QTGUI YES )
 include( "${QT_USE_FILE}" )
 
+
 # mpg123
 find_package( Mpg123 )
 
@@ -16,6 +17,7 @@ if ( NOT Mpg123_FOUND )
 	if ( GrimAudio_BUILD_PLUGIN_MP3_OPTIONAL )
 		set( _required_qualifier STATUS )
 	else()
+		mark_as_advanced( CLEAR ${Mpg123_ADVANCED_VARIABLES} )
 		set( _required_qualifier FATAL_ERROR )
 	endif()
 

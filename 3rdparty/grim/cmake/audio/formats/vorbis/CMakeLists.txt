@@ -18,6 +18,8 @@ if ( NOT Ogg_FOUND OR NOT Vorbis_FOUND )
 	if ( GrimAudio_BUILD_PLUGIN_VORBIS_OPTIONAL )
 		set( _required_qualifier STATUS )
 	else()
+		mark_as_advanced( CLEAR Ogg_ADVANCED_VARIABLES )
+		mark_as_advanced( CLEAR Vorbis_ADVANCED_VARIABLES )
 		set( _required_qualifier FATAL_ERROR )
 	endif()
 

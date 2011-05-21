@@ -14,13 +14,23 @@
 set( FLAC_FOUND NO )
 
 
+set( FLAC_ROOT_DIR "" CACHE PATH "Root directory for FLAC library" )
+
+
+if ( FLAC_ROOT_DIR )
+	unset( FLAC_INCLUDE_DIR CACHE )
+	unset( FLAC_LIBRARY CACHE )
+endif()
+
+
 find_path( FLAC_INCLUDE_DIR
 	NAMES
 		"FLAC/all.h"
-	PATHS
+	HINTS
 		"${FLAC_ROOT_DIR}/include"
-		"$ENV{FLACDIR}"
 		"$ENV{FLACDIR}/include"
+		"$ENV{FLACDIR}"
+	PATHS
 		"/usr/include"
 	DOC
 		"Path to FLAC include directory"
@@ -62,26 +72,24 @@ if ( FLAC_INCLUDE_DIR AND FLAC_LIBRARY )
 endif()
 
 
-set( _advanced_variables FLAC_ROOT_DIR FLAC_INCLUDE_DIR FLAC_LIBRARY )
+set( FLAC_ADVANCED_VARIABLES FLAC_ROOT_DIR FLAC_INCLUDE_DIR FLAC_LIBRARY )
 
 
 if ( NOT FLAC_FOUND )
-	set( FLAC_ROOT_DIR "" CACHE PATH "Root directory for FLAC library" )
-
 	set( _message_common
 		"FLAC library not found.\nPlease specify FLAC_ROOT_DIR variable or FLAC_INCLUDE_DIR and FLAC_LIBRARY separately." )
 
 	if ( FLAC_FIND_REQUIRED )
-		mark_as_advanced( CLEAR ${_advanced_variables} )
+		mark_as_advanced( CLEAR ${FLAC_ADVANCED_VARIABLES} )
 		message( FATAL_ERROR "${_message_common}" )
 	endif()
 
-	mark_as_advanced( ${_advanced_variables} )
+	mark_as_advanced( ${FLAC_ADVANCED_VARIABLES} )
 	message( "${_message_common}\n"
 		"You will find this variables in the advanced variables list." )
 	set( FLAC_LIBRARIES "" CACHE "FLAC libraries" STRING FORCE )
 else()
-	mark_as_advanced( FORCE ${_advanced_variables} )
+	mark_as_advanced( FORCE ${FLAC_ADVANCED_VARIABLES} )
 	include_directories( ${FLAC_INCLUDE_DIR} )
 	set( FLAC_LIBRARIES "${FLAC_LIBRARY}" CACHE "FLAC libraries" STRING FORCE )
 endif()

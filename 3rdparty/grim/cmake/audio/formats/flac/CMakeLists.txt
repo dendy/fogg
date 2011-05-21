@@ -17,6 +17,7 @@ if ( NOT FLAC_FOUND )
 	if ( GrimAudio_BUILD_PLUGIN_FLAC_OPTIONAL )
 		set( _required_qualifier STATUS )
 	else()
+		mark_as_advanced( CLEAR ${FLAC_ADVANCED_VARIABLES} )
 		set( _required_qualifier FATAL_ERROR )
 	endif()
 

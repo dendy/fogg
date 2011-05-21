@@ -15,12 +15,22 @@
 set( Ogg_FOUND NO )
 
 
+set( OGG_ROOT_DIR "" CACHE PATH "Root directory for Ogg library" )
+
+
+if ( OGG_ROOT_DIR )
+	unset( Ogg_INCLUDE_DIR CACHE )
+	unset( Ogg_LIBRARY CACHE )
+endif()
+
+
 find_path( Ogg_INCLUDE_DIR
 	NAMES
 		"ogg/ogg.h"
-	PATHS
+	HINTS
 		"${OGG_ROOT_DIR}/include"
 		"$ENV{OGGDIR}"
+	PATHS
 		"/usr/include"
 	DOC
 		"Path to Ogg include directory"
@@ -76,26 +86,24 @@ if ( Ogg_INCLUDE_DIR AND Ogg_LIBRARY )
 endif()
 
 
-set( _advanced_variables OGG_ROOT_DIR Ogg_INCLUDE_DIR Ogg_LIBRARY )
+set( Ogg_ADVANCED_VARIABLES OGG_ROOT_DIR Ogg_INCLUDE_DIR Ogg_LIBRARY )
 
 
 if ( NOT Ogg_FOUND )
-	set( OGG_ROOT_DIR "" CACHE PATH "Root directory for Ogg library" )
-
 	set( _message_common
 		"Ogg library not found.\nPlease specify OGG_ROOT_DIR variable or Ogg_INCLUDE_DIR and Ogg_LIBRARY separately." )
 
 	if ( Ogg_FIND_REQUIRED )
-		mark_as_advanced( CLEAR ${_advanced_variables} )
+		mark_as_advanced( CLEAR ${Ogg_ADVANCED_VARIABLES} )
 		message( FATAL_ERROR "${_message_common}" )
 	endif()
 
-	mark_as_advanced( ${_advanced_variables} )
+	mark_as_advanced( ${Ogg_ADVANCED_VARIABLES} )
 	message( "${_message_common}\n"
 		"You will find this variables in the advanced variables list." )
 	set( Ogg_LIBRARIES "" CACHE STRING "Ogg libraries" FORCE )
 else()
-	mark_as_advanced( FORCE ${_advanced_variables} )
+	mark_as_advanced( FORCE ${Ogg_ADVANCED_VARIABLES} )
 	include_directories( "${Ogg_INCLUDE_DIR}" )
 	set( Ogg_LIBRARIES "${Ogg_LIBRARY}" CACHE STRING "Ogg libraries" FORCE )
 endif()

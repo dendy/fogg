@@ -17,14 +17,26 @@
 set( Vorbis_FOUND NO )
 
 
+set( VORBIS_ROOT_DIR "" CACHE PATH "Root directory for Vorbis library" )
+
+
+if ( VORBIS_ROOT_DIR )
+	unset( Vorbis_INCLUDE_DIR CACHE )
+	unset( Vorbis_LIBRARY CACHE )
+	unset( VorbisFile_LIBRARY CACHE )
+	unset( VorbisEnc_LIBRARY CACHE )
+endif()
+
+
 find_path( Vorbis_INCLUDE_DIR
 	NAMES
 		"vorbis/codec.h"
 		"vorbis/vorbisenc.h"
 		"vorbis/vorbisfile.h"
-	PATHS
+	HINTS
 		"${VORBIS_ROOT_DIR}/include"
 		"$ENV{VORBISDIR}/include"
+	PATHS
 		"/usr/include"
 	DOC
 		"Path to Vorbis include directory"
@@ -116,26 +128,24 @@ if ( Vorbis_INCLUDE_DIR AND Vorbis_LIBRARY AND VorbisFile_LIBRARY AND VorbisEnc_
 endif()
 
 
-set( _advanced_variables VORBIS_ROOT_DIR Vorbis_INCLUDE_DIR Vorbis_LIBRARY VorbisFile_LIBRARY VorbisEnc_LIBRARY )
+set( Vorbis_ADVANCED_VARIABLES VORBIS_ROOT_DIR Vorbis_INCLUDE_DIR Vorbis_LIBRARY VorbisFile_LIBRARY VorbisEnc_LIBRARY )
 
 
 if ( NOT Vorbis_FOUND )
-	set( VORBIS_ROOT_DIR "" CACHE PATH "Root directory for Vorbis library" )
-
 	set( _message_common
 		"Vorbis library not found.\nPlease specify VORBIS_ROOT_DIR variable or Vorbis_INCLUDE_DIR and Vorbis_LIBRARY and VorbisFile_LIBRARY and VorbisEnc_LIBRARY separately." )
 
 	if ( Vorbis_FIND_REQUIRED )
-		mark_as_advanced( CLEAR ${_advanced_variables} )
+		mark_as_advanced( CLEAR ${Vorbis_ADVANCED_VARIABLES} )
 		message( FATAL_ERROR "${_message_common}" )
 	endif()
 
-	mark_as_advanced( ${_advanced_variables} )
+	mark_as_advanced( ${Vorbis_ADVANCED_VARIABLES} )
 	message( "${_message_common}\n"
 		"You will find this variables in the advanced variables list." )
 	set( Vorbis_LIBRARIES "" CACHE STRING "Vorbis libraries" FORCE )
 else()
-	mark_as_advanced( FORCE ${_advanced_variables} )
+	mark_as_advanced( FORCE ${Vorbis_ADVANCED_VARIABLES} )
 	include_directories( "${Vorbis_INCLUDE_DIR}" )
 	set( Vorbis_LIBRARIES "${Vorbis_LIBRARY};${VorbisFile_LIBRARY};${VorbisEnc_LIBRARY}" CACHE STRING "Vorbis libraries" FORCE )
 endif()
