@@ -12,7 +12,7 @@ namespace Audio {
 
 
 
-static const QByteArray kMp3FormatName = "MP3";
+static const QByteArray kMp3FormatName = "Mp3";
 
 static const char kCodecForRawStringsKey[] = "GRIM_AUDIO_MP3_FORMAT_PLUGIN_CODEC_FOR_RAW_STRINGS";
 
@@ -273,7 +273,7 @@ QString Mp3FormatDevice::_fromRawString( const char * string, int size ) const
 	if ( !string )
 		return QString();
 
-	const int length = strnlen( string, size );
+	const int length = qstrnlen( string, size );
 	if ( length == 0 )
 		return QString();
 
