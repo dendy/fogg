@@ -11,7 +11,7 @@
 # FLAC_LIBRARY
 
 
-set( FLAC_FOUND NO )
+set( Flac_FOUND NO )
 
 
 set( FLAC_ROOT_DIR "" CACHE PATH "Root directory for FLAC library" )
@@ -68,14 +68,14 @@ find_library( FLAC_LIBRARY
 
 
 if ( FLAC_INCLUDE_DIR AND FLAC_LIBRARY )
-	set( FLAC_FOUND YES )
+	set( Flac_FOUND YES )
 endif()
 
 
 set( FLAC_ADVANCED_VARIABLES FLAC_ROOT_DIR FLAC_INCLUDE_DIR FLAC_LIBRARY )
 
 
-if ( NOT FLAC_FOUND )
+if ( NOT Flac_FOUND )
 	set( _message_common
 		"FLAC library not found.\nPlease specify FLAC_ROOT_DIR variable or FLAC_INCLUDE_DIR and FLAC_LIBRARY separately." )
 

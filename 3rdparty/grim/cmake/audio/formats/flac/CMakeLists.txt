@@ -10,10 +10,10 @@ include( "${QT_USE_FILE}" )
 
 
 # FLAC
-find_package( FLAC )
+find_package( Flac )
 
 
-if ( NOT FLAC_FOUND )
+if ( NOT Flac_FOUND )
 	if ( GrimAudio_BUILD_PLUGIN_FLAC_OPTIONAL )
 		set( _required_qualifier STATUS )
 	else()
