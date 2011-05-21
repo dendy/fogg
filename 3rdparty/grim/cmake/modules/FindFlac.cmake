@@ -1,33 +1,39 @@
 
-# Looks up for the FLAC libraries
+# Looks up for the FLAC libraries.
+#
+# Possible CMake variables:
+#
+#   Flac_ROOT_DIR - points where FLAC root directory exists
 #
 # Possible environment variables:
 #
-# FLACDIR - points where FLAC root directory exists
+#   FLACDIR       - same as Flac_ROOT_DIR
 #
 # Outputs:
 #
-# FLAC_INLUDE_DIR
-# FLAC_LIBRARY
+#   Flac_INLUDE_DIR         - directory to include (done automatically)
+#   Flac_LIBRARY            - path to FLAC interface library
+#   Flac_LIBRARIES          - list of all FLAC libraries
+#   Flac_ADVANCED_VARIABLED - list of variables to setup manually
 
 
 set( Flac_FOUND NO )
 
 
-set( FLAC_ROOT_DIR "" CACHE PATH "Root directory for FLAC library" )
+set( Flac_ROOT_DIR "" CACHE PATH "Root directory for FLAC library" )
 
 
-if ( FLAC_ROOT_DIR )
-	unset( FLAC_INCLUDE_DIR CACHE )
-	unset( FLAC_LIBRARY CACHE )
+if ( Flac_ROOT_DIR )
+	unset( Flac_INCLUDE_DIR CACHE )
+	unset( Flac_LIBRARY CACHE )
 endif()
 
 
-find_path( FLAC_INCLUDE_DIR
+find_path( Flac_INCLUDE_DIR
 	NAMES
 		"FLAC/all.h"
 	HINTS
-		"${FLAC_ROOT_DIR}/include"
+		"${Flac_ROOT_DIR}/include"
 		"$ENV{FLACDIR}/include"
 		"$ENV{FLACDIR}"
 	PATHS
@@ -38,7 +44,7 @@ find_path( FLAC_INCLUDE_DIR
 
 
 if ( WIN32 )
-	if ( CMAKE_BUILD_TYPE STREQUAL "Debug" )
+	if ( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
 		set( _flac_path_suffixes "obj/debug/lib" )
 	else()
 		set( _flac_path_suffixes "obj/release/lib" )
@@ -46,16 +52,17 @@ if ( WIN32 )
 endif()
 
 
-find_library( FLAC_LIBRARY
+find_library( Flac_LIBRARY
 	NAMES
 		flac FLAC libFLAC_dynamic
 	PATH_SUFFIXES
 		${_flac_path_suffixes}
-	PATHS
-		"${FLAC_ROOT_DIR}"
-		"${FLAC_ROOT_DIR}/lib"
-		"$ENV{FLACDIR}"
+	HINTS
+		"${Flac_ROOT_DIR}/lib"
+		"${Flac_ROOT_DIR}"
 		"$ENV{FLACDIR}/lib"
+		"$ENV{FLACDIR}"
+	PATHS
 		"/usr/local/lib"
 		"/usr/lib"
 		"/sw/lib"
@@ -67,32 +74,32 @@ find_library( FLAC_LIBRARY
 )
 
 
-if ( FLAC_INCLUDE_DIR AND FLAC_LIBRARY )
+if ( Flac_INCLUDE_DIR AND Flac_LIBRARY )
 	set( Flac_FOUND YES )
 endif()
 
 
-set( FLAC_ADVANCED_VARIABLES FLAC_ROOT_DIR FLAC_INCLUDE_DIR FLAC_LIBRARY )
+set( Flac_ADVANCED_VARIABLES Flac_ROOT_DIR Flac_INCLUDE_DIR Flac_LIBRARY )
 
 
 if ( NOT Flac_FOUND )
 	set( _message_common
-		"FLAC library not found.\nPlease specify FLAC_ROOT_DIR variable or FLAC_INCLUDE_DIR and FLAC_LIBRARY separately." )
+		"FLAC library not found.\nPlease specify Flac_ROOT_DIR variable or Flac_INCLUDE_DIR and Flac_LIBRARY separately." )
 
 	if ( FLAC_FIND_REQUIRED )
-		mark_as_advanced( CLEAR ${FLAC_ADVANCED_VARIABLES} )
+		mark_as_advanced( CLEAR ${Flac_ADVANCED_VARIABLES} )
 		message( FATAL_ERROR "${_message_common}" )
 	endif()
 
-	mark_as_advanced( ${FLAC_ADVANCED_VARIABLES} )
+	mark_as_advanced( ${Flac_ADVANCED_VARIABLES} )
 	message( "${_message_common}\n"
 		"You will find this variables in the advanced variables list." )
-	set( FLAC_LIBRARIES "" CACHE "FLAC libraries" STRING FORCE )
+	set( Flac_LIBRARIES "" CACHE "FLAC libraries" STRING FORCE )
 else()
-	mark_as_advanced( FORCE ${FLAC_ADVANCED_VARIABLES} )
-	include_directories( ${FLAC_INCLUDE_DIR} )
-	set( FLAC_LIBRARIES "${FLAC_LIBRARY}" CACHE "FLAC libraries" STRING FORCE )
+	mark_as_advanced( FORCE ${Flac_ADVANCED_VARIABLES} )
+	include_directories( ${Flac_INCLUDE_DIR} )
+	set( Flac_LIBRARIES "${Flac_LIBRARY}" CACHE "FLAC libraries" STRING FORCE )
 endif()
 
 
-mark_as_advanced( FLAC_LIBRARIES )
+mark_as_advanced( Flac_LIBRARIES )

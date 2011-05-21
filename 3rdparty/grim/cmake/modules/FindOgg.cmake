@@ -1,24 +1,29 @@
 
-# Looks up for the Ogg libraries
+# Looks up for the Ogg libraries.
+#
+# Possible CMake variables:
+#
+#   Ogg_ROOT_DIR - points where Ogg root directory exists
 #
 # Possible environment variables:
 #
-# OGGDIR - points where Ogg root directory exists
+#   OGGDIR       - same as Ogg_ROOT_DIR
 #
 # Outputs:
 #
-# Ogg_INLUDE_DIR
-# Ogg_LIBRARY
-# Ogg_LIBRARIES
+#   Ogg_INLUDE_DIR         - directory to include (done automatically)
+#   Ogg_LIBRARY            - path to Ogg interface library
+#   Ogg_LIBRARIES          - list of all Ogg libraries
+#   Ogg_ADVANCED_VARIABLES - list of variables to setup manually
 
 
 set( Ogg_FOUND NO )
 
 
-set( OGG_ROOT_DIR "" CACHE PATH "Root directory for Ogg library" )
+set( Ogg_ROOT_DIR "" CACHE PATH "Root directory for Ogg library" )
 
 
-if ( OGG_ROOT_DIR )
+if ( Ogg_ROOT_DIR )
 	unset( Ogg_INCLUDE_DIR CACHE )
 	unset( Ogg_LIBRARY CACHE )
 endif()
@@ -28,7 +33,7 @@ find_path( Ogg_INCLUDE_DIR
 	NAMES
 		"ogg/ogg.h"
 	HINTS
-		"${OGG_ROOT_DIR}/include"
+		"${Ogg_ROOT_DIR}/include"
 		"$ENV{OGGDIR}"
 	PATHS
 		"/usr/include"
@@ -66,10 +71,11 @@ find_library( Ogg_LIBRARY
 		${_ogg_lib_names}
 	PATH_SUFFIXES
 		${_ogg_path_suffixes}
-	PATHS
-		"${OGG_ROOT_DIR}"
+	HINTS
+		"${Ogg_ROOT_DIR}"
 		"$ENV{OGGDIR}"
 		"$ENV{VORBISDIR}"
+	PATHS
 		"/usr"
 		"/usr/local"
 		"/sw"
@@ -86,12 +92,12 @@ if ( Ogg_INCLUDE_DIR AND Ogg_LIBRARY )
 endif()
 
 
-set( Ogg_ADVANCED_VARIABLES OGG_ROOT_DIR Ogg_INCLUDE_DIR Ogg_LIBRARY )
+set( Ogg_ADVANCED_VARIABLES Ogg_ROOT_DIR Ogg_INCLUDE_DIR Ogg_LIBRARY )
 
 
 if ( NOT Ogg_FOUND )
 	set( _message_common
-		"Ogg library not found.\nPlease specify OGG_ROOT_DIR variable or Ogg_INCLUDE_DIR and Ogg_LIBRARY separately." )
+		"Ogg library not found.\nPlease specify Ogg_ROOT_DIR variable or Ogg_INCLUDE_DIR and Ogg_LIBRARY separately." )
 
 	if ( Ogg_FIND_REQUIRED )
 		mark_as_advanced( CLEAR ${Ogg_ADVANCED_VARIABLES} )

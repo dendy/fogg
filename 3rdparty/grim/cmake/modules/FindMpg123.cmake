@@ -1,11 +1,29 @@
 
+# Looks up for the mpg123 libraries.
+#
+# Possible CMake variables:
+#
+#   Mpg123_ROOT_DIR - points where mpg123 root directory exists
+#
+# Possible environment variables:
+#
+#   MPG123DIR       - same as Mpg123_ROOT_DIR
+#
+# Outputs:
+#
+#   Mpg123_INLUDE_DIR         - directory to include (done automatically)
+#   Mpg123_LIBRARY            - path to mpg123 interface library
+#   Mpg123_LIBRARIES          - list of all mpg123 libraries
+#   Mpg123_ADVANCED_VARIABLES - list of variables to setup manually
+
+
 set( Mpg123_FOUND NO )
 
 
-set( MPG123_ROOT_DIR "" CACHE PATH "Root directory of mpg123 library" )
+set( Mpg123_ROOT_DIR "" CACHE PATH "Root directory of mpg123 library" )
 
 
-if ( MPG123_ROOT_DIR )
+if ( Mpg123_ROOT_DIR )
 	unset( Mpg123_INCLUDE_DIR CACHE )
 	unset( Mpg123_LIBRARY CACHE )
 endif()
@@ -15,7 +33,7 @@ find_path( Mpg123_INCLUDE_DIR
 	NAMES
 		"mpg123.h"
 	HINTS
-		"${MPG123_ROOT_DIR}/include"
+		"${Mpg123_ROOT_DIR}/include"
 		"$ENV{MPG123DIR}"
 	PATHS
 		"/usr/include"
@@ -29,9 +47,10 @@ find_library( Mpg123_LIBRARY
 		"mpg123"
 	PATH_SUFFIXES
 		"lib" "lib64"
-	PATHS
-		"${MPG123_ROOT_DIR}"
+	HINTS
+		"${Mpg123_ROOT_DIR}"
 		"$ENV{MPG123DIR}"
+	PATHS
 		"/usr"
 		"/usr/local"
 )
@@ -42,12 +61,12 @@ if ( Mpg123_INCLUDE_DIR AND Mpg123_LIBRARY )
 endif()
 
 
-set( Mpg123_ADVANCED_VARIABLES MPG123_ROOT_DIR Mpg123_INCLUDE_DIR Mpg123_LIBRARY )
+set( Mpg123_ADVANCED_VARIABLES Mpg123_ROOT_DIR Mpg123_INCLUDE_DIR Mpg123_LIBRARY )
 
 
 if ( NOT Mpg123_FOUND )
 	set( _message_common
-		"mpg123 library not found.\nPlease specify MPG123_ROOT_DIR variable or Mpg123_INCLUDE_DIR and Mpg123_LIBRARY separately." )
+		"mpg123 library not found.\nPlease specify Mpg123_ROOT_DIR variable or Mpg123_INCLUDE_DIR and Mpg123_LIBRARY separately." )
 
 	if ( Mpg123_FIND_REQUIRED )
 		mark_as_advanced( CLEAR ${Mpg123_ADVANCED_VARIABLES} )

@@ -1,26 +1,31 @@
 
-# Looks up for the Vorbis libraries
+# Looks up for the Vorbis libraries.
+#
+# Possible CMake variables:
+#
+#   Vorbis_ROOT_DIR - points where Vorbis root directory exists
 #
 # Possible environment variables:
 #
-# VORBIS_ROOT_DIR - points where Vorbis root directory exists
+#   VORBISDIR       - same as Vorbis_ROOT_DIR
 #
 # Outputs:
 #
-# Vorbis_INCLUDE_DIR
-# Vorbis_LIBRARY
-# VorbisFile_LIBRARY
-# VorbisEnc_LIBRARY
-# Vorbis_LIBRARIES
+#   Vorbis_INCLUDE_DIR        - directory to include (done automatically)
+#   Vorbis_LIBRARY            - path to Vorbis library
+#   VorbisFile_LIBRARY        - path to VorbisFile library
+#   VorbisEnc_LIBRARY         - path to VorbisEnc library
+#   Vorbis_LIBRARIES          - list of all Vorbis libraries
+#   Vorbis_ADVANCED_VARIABLES - list of variables to setup manually
 
 
 set( Vorbis_FOUND NO )
 
 
-set( VORBIS_ROOT_DIR "" CACHE PATH "Root directory for Vorbis library" )
+set( Vorbis_ROOT_DIR "" CACHE PATH "Root directory for Vorbis library" )
 
 
-if ( VORBIS_ROOT_DIR )
+if ( Vorbis_ROOT_DIR )
 	unset( Vorbis_INCLUDE_DIR CACHE )
 	unset( Vorbis_LIBRARY CACHE )
 	unset( VorbisFile_LIBRARY CACHE )
@@ -34,7 +39,7 @@ find_path( Vorbis_INCLUDE_DIR
 		"vorbis/vorbisenc.h"
 		"vorbis/vorbisfile.h"
 	HINTS
-		"${VORBIS_ROOT_DIR}/include"
+		"${Vorbis_ROOT_DIR}/include"
 		"$ENV{VORBISDIR}/include"
 	PATHS
 		"/usr/include"
@@ -71,13 +76,16 @@ else()
 	set( _vorbisenc_lib_names "vorbisenc" "VorbisEnc" "VORBISENC" )
 endif()
 
-set( _vorbis_paths
-	"${VORBIS_ROOT_DIR}/lib"
-	"${VORBIS_ROOT_DIR}"
+set( _vorbis_hints
+	"${Vorbis_ROOT_DIR}/lib"
+	"${Virbis_ROOT_DIR}"
 	"$ENV{VORBISDIR}/lib"
 	"$ENV{VORBISDIR}"
 	"$ENV{OGGDIR}/lib"
 	"$ENV{OGGDIR}"
+)
+
+set( _vorbis_paths
 	"/usr/local/lib"
 	"/usr/lib"
 	"/sw/lib"
@@ -92,6 +100,8 @@ find_library( Vorbis_LIBRARY
 		${_vorbis_lib_names}
 	PATH_SUFFIXES
 		${_vorbis_path_suffixes}
+	HINTS
+		${_vorbis_hints}
 	PATHS
 		${_vorbis_paths}
 	DOC
@@ -128,12 +138,12 @@ if ( Vorbis_INCLUDE_DIR AND Vorbis_LIBRARY AND VorbisFile_LIBRARY AND VorbisEnc_
 endif()
 
 
-set( Vorbis_ADVANCED_VARIABLES VORBIS_ROOT_DIR Vorbis_INCLUDE_DIR Vorbis_LIBRARY VorbisFile_LIBRARY VorbisEnc_LIBRARY )
+set( Vorbis_ADVANCED_VARIABLES Vorbis_ROOT_DIR Vorbis_INCLUDE_DIR Vorbis_LIBRARY VorbisFile_LIBRARY VorbisEnc_LIBRARY )
 
 
 if ( NOT Vorbis_FOUND )
 	set( _message_common
-		"Vorbis library not found.\nPlease specify VORBIS_ROOT_DIR variable or Vorbis_INCLUDE_DIR and Vorbis_LIBRARY and VorbisFile_LIBRARY and VorbisEnc_LIBRARY separately." )
+		"Vorbis library not found.\nPlease specify Vorbis_ROOT_DIR variable or Vorbis_INCLUDE_DIR and Vorbis_LIBRARY and VorbisFile_LIBRARY and VorbisEnc_LIBRARY separately." )
 
 	if ( Vorbis_FIND_REQUIRED )
 		mark_as_advanced( CLEAR ${Vorbis_ADVANCED_VARIABLES} )
