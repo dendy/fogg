@@ -23,6 +23,7 @@
 #include "AboutDialog.h"
 #include "PreferencesDialog.h"
 #include "SkippedFilesDialog.h"
+#include "NonRecognizedFilesDialog.h"
 #include "JobItemModel.h"
 #include "ButtonActionBinder.h"
 
@@ -339,7 +340,7 @@ MainWindow::MainWindow( Config * const config, Converter * const converter ) :
 	fileFetcher_ = new FileFetcher( this );
 	fileFetcher_->setFilters( _collectMediaFileFilters() );
 	connect( fileFetcher_, SIGNAL(currentDirChanged(QString)), SLOT(_currentFetchDirChanged(QString)) );
-	connect( fileFetcher_, SIGNAL(fetched(QString,QString)), SLOT(_fetched(QString,QString)) );
+	connect( fileFetcher_, SIGNAL(fetched(QString,QString,bool)), SLOT(_fetched(QString,QString,bool)) );
 	connect( fileFetcher_, SIGNAL(finished()), SLOT(_fetchFinished()) );
 
 	// user interface
@@ -620,6 +621,7 @@ void MainWindow::_startFileFetch( const QList<QUrl> & urls )
 
 	fetchedFileCount_ = 0;
 	failedFetchedFilePaths_.clear();
+	nonRecognizedFetchedFileInfos_.clear();
 
 	fileFetcherDialog_->setFetchFinished( false );
 	fileFetcher_->setUrls( urls );
@@ -627,6 +629,62 @@ void MainWindow::_startFileFetch( const QList<QUrl> & urls )
 	fileFetcherDialogAppearTimer_->start();
 
 	_updateFileFetcherActions();
+}
+
+
+void MainWindow::_finishFileFetch()
+{
+	if ( !nonRecognizedFetchedFileInfos_.isEmpty() )
+	{
+		fileFetcherDialog_->hide();
+
+		if ( !nonRecognizedFilesDialog_ )
+			nonRecognizedFilesDialog_ = new NonRecognizedFilesDialog( this );
+
+		QStringList filePaths;
+		foreach ( const FetchedFileInfo & fetchFileInfo, nonRecognizedFetchedFileInfos_ )
+			filePaths << fetchFileInfo.filePath;
+
+		if ( nonRecognizedFilesDialog_->exec( filePaths ) == QDialog::Accepted )
+		{
+			foreach ( const FetchedFileInfo & fetchFileInfo, nonRecognizedFetchedFileInfos_ )
+				_tryAddFile( fetchFileInfo.filePath, fetchFileInfo.basePath );
+		}
+	}
+
+	if ( !failedFetchedFilePaths_.isEmpty() )
+	{
+		fileFetcherDialog_->hide();
+
+		if ( !skippedFilesDialog_ )
+			skippedFilesDialog_ = new SkippedFilesDialog( this );
+
+		skippedFilesDialog_->exec( failedFetchedFilePaths_ );
+	}
+
+	failedFetchedFilePaths_.clear();
+	nonRecognizedFetchedFileInfos_.clear();
+
+	_updateFileFetcherActions();
+}
+
+
+bool MainWindow::_tryAddFile( const QString & filePath, const QString & basePath )
+{
+	bool isAdded;
+	const QModelIndex index = jobItemModel_->addFile( filePath, basePath, isAdded );
+
+	if ( !index.isValid() )
+	{
+		failedFetchedFilePaths_ << filePath;
+		return false;
+	}
+
+	// expand index branch to make it visible
+	for ( QModelIndex parentIndex = index.parent(); parentIndex.isValid(); parentIndex = parentIndex.parent() )
+		ui_.jobView->expand( parentIndex );
+
+	return true;
 }
 
 
@@ -777,23 +835,19 @@ void MainWindow::_currentFetchDirChanged( const QString & dirPath )
 }
 
 
-void MainWindow::_fetched( const QString & filePath, const QString & basePath )
+void MainWindow::_fetched( const QString & filePath, const QString & basePath, const bool extensionRecognized )
 {
 	fetchedFileCount_++;
 	fileFetcherDialog_->setFileCount( fetchedFileCount_ );
 
-	bool isAdded;
-	const QModelIndex index = jobItemModel_->addFile( filePath, basePath, isAdded );
-
-	if ( !index.isValid() )
+	if ( !extensionRecognized )
 	{
-		failedFetchedFilePaths_ << filePath;
+		nonRecognizedFetchedFileInfos_ << FetchedFileInfo( filePath, basePath );
 		return;
 	}
 
-	// expand index branch to make it visible
-	for ( QModelIndex parentIndex = index.parent(); parentIndex.isValid(); parentIndex = parentIndex.parent() )
-		ui_.jobView->expand( parentIndex );
+	if ( !_tryAddFile( filePath, basePath ) )
+		return;
 }
 
 
@@ -802,17 +856,7 @@ void MainWindow::_fetchFinished()
 	fileFetcherDialog_->setFetchFinished( true );
 	fileFetcherDialogAppearTimer_->stop();
 
-	if ( !failedFetchedFilePaths_.isEmpty() )
-	{
-		fileFetcherDialog_->hide();
-
-		if ( !skippedFilesDialog_ )
-			skippedFilesDialog_ = new SkippedFilesDialog( this );
-
-		skippedFilesDialog_->exec( failedFetchedFilePaths_ );
-	}
-
-	_updateFileFetcherActions();
+	_finishFileFetch();
 }
 
 
@@ -831,7 +875,7 @@ void MainWindow::_fileFetchDialogAborted()
 
 	fileFetcher_->abort();
 
-	_updateFileFetcherActions();
+	_finishFileFetch();
 }
 
 

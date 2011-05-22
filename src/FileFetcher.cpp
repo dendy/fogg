@@ -87,7 +87,7 @@ bool FileFetcher::event( QEvent * const e )
 		const FetchedEvent * const fetchEvent = static_cast<const FetchedEvent*>( e );
 		foreach ( const QString & filePath, fetchEvent->filePaths )
 		{
-			emit fetched( filePath, fetchEvent->basePath );
+			emit fetched( filePath, fetchEvent->basePath, fetchEvent->isExtensionRecognized );
 			if ( isAborted_ )
 				break;
 		}
@@ -145,6 +145,7 @@ void FileFetcher::_processUrls()
 
 	{
 		QMap<QString,QStringList> directFilePathsForBasePath;
+		QMap<QString,QStringList> nonRecognizedDirectFilePathsForBasePath;
 
 		foreach ( const QUrl & url, urls_ )
 		{
@@ -163,18 +164,25 @@ void FileFetcher::_processUrls()
 			}
 
 			// given URL is a file, check whether it matches the given filters
+			const QString basePath = pathInfo.path();
+			const QString path = pathInfo.absoluteFilePath();
 			if ( QDir::match( filters_, pathInfo.fileName() ) )
-			{
-				const QString basePath = pathInfo.path();
-				const QString path = pathInfo.absoluteFilePath();
 				directFilePathsForBasePath[ basePath ] << path;
-			}
+			else
+				nonRecognizedDirectFilePathsForBasePath[ basePath ] << path;
 		}
 
 		for ( QMapIterator<QString,QStringList> it( directFilePathsForBasePath ); it.hasNext(); )
 		{
 			it.next();
-			if ( !_postFetchEvent( it.key(), it.value() ) )
+			if ( !_postFetchEvent( it.key(), it.value(), true ) )
+				return;
+		}
+
+		for ( QMapIterator<QString,QStringList> it( nonRecognizedDirectFilePathsForBasePath ); it.hasNext(); )
+		{
+			it.next();
+			if ( !_postFetchEvent( it.key(), it.value(), false ) )
 				return;
 		}
 	}
@@ -201,13 +209,13 @@ void FileFetcher::_processUrls()
 		QStringList filePaths;
 		foreach ( const QString & fileName, fileNames )
 			filePaths << currentDir.absoluteFilePath( fileName );
-		if ( !_postFetchEvent( currentPath.basePath, filePaths ) )
+		if ( !_postFetchEvent( currentPath.basePath, filePaths, true ) )
 			return;
 	}
 }
 
 
-bool FileFetcher::_postFetchEvent( const QString & basePath, const QStringList & filePaths )
+bool FileFetcher::_postFetchEvent( const QString & basePath, const QStringList & filePaths, const bool isExtensionRecognized )
 {
 	if ( filePaths.isEmpty() )
 		return true;
@@ -216,7 +224,7 @@ bool FileFetcher::_postFetchEvent( const QString & basePath, const QStringList &
 	if ( isAborted_ )
 		return false;
 
-	QCoreApplication::postEvent( this, new FetchedEvent( basePath, filePaths ) );
+	QCoreApplication::postEvent( this, new FetchedEvent( basePath, filePaths, isExtensionRecognized ) );
 
 	return true;
 }

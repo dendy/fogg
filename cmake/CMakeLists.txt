@@ -161,6 +161,7 @@ my_add_sources( Fogg
 		JobItemModel
 		main.cpp
 		MainWindow
+		NonRecognizedFilesDialog
 		PoweredByWidget
 		PreferencesDialog
 		ButtonActionBinder
@@ -173,6 +174,7 @@ my_add_sources( Fogg
 		EncodingQualityWidget
 		FileFetcherDialog
 		MainWindow
+		NonRecognizedFilesDialog
 		PoweredByWidget
 		PreferencesDialog
 		SkippedFilesDialog

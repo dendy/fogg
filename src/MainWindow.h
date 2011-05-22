@@ -40,6 +40,7 @@ class DonationDialog;
 class AboutDialog;
 class PreferencesDialog;
 class SkippedFilesDialog;
+class NonRecognizedFilesDialog;
 class JobItemModel;
 
 
@@ -122,6 +123,18 @@ protected:
 	bool eventFilter( QObject * o, QEvent * e );
 
 private:
+	class FetchedFileInfo
+	{
+	public:
+		FetchedFileInfo( const QString & _filePath, const QString & _basePath ) :
+			filePath( _filePath ), basePath( _basePath )
+		{}
+
+		QString filePath;
+		QString basePath;
+	};
+
+private:
 	void _retranslateUi();
 	void _retranslateDropHintLabel();
 
@@ -134,6 +147,8 @@ private:
 	void _updateCurrentTarget();
 	void _setJobItemModelSourcePaths();
 	void _startFileFetch( const QList<QUrl> & urls );
+	void _finishFileFetch();
+	bool _tryAddFile( const QString & filePath, const QString & basePath );
 
 private slots:
 	void _aboutToQuit();
@@ -145,7 +160,7 @@ private slots:
 	void _jobFinished( int jobId, int result );
 
 	void _currentFetchDirChanged( const QString & dirPath );
-	void _fetched( const QString & filePath, const QString & basePath );
+	void _fetched( const QString & filePath, const QString & basePath, bool extensionRecognized );
 	void _fetchFinished();
 
 	void _showFileFetcherDialog();
@@ -212,6 +227,7 @@ private:
 	QPointer<AboutDialog> aboutDialog_;
 	QPointer<PreferencesDialog> preferencesDialog_;
 	QPointer<SkippedFilesDialog> skippedFilesDialog_;
+	QPointer<NonRecognizedFilesDialog> nonRecognizedFilesDialog_;
 
 	// drop hint
 	QPointer<QLabel> dropHintLabel_;
@@ -220,6 +236,7 @@ private:
 	// helpers
 	int fetchedFileCount_;
 	QStringList failedFetchedFilePaths_;
+	QList<FetchedFileInfo> nonRecognizedFetchedFileInfos_;
 
 	bool selfChangeCurrentTargetIndex_;
 };

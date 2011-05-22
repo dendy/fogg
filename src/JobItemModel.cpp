@@ -496,7 +496,7 @@ QString JobItemModel::_oggedFileName( const QString & filePath ) const
 	static const QString kOggSuffix = QLatin1String( "ogg" );
 	const QFileInfo fileInfo = QFileInfo( filePath );
 	const QString suffix = fileInfo.suffix();
-	return suffix.isNull() ?
+	return suffix.isEmpty() ?
 		filePath + "." + kOggSuffix :
 		filePath.left( filePath.length() - suffix.length() ) + kOggSuffix;
 }

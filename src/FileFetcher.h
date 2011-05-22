@@ -50,7 +50,7 @@ public slots:
 
 signals:
 	void currentDirChanged( const QString & dirPath );
-	void fetched( const QString & filePath, const QString & basePath );
+	void fetched( const QString & filePath, const QString & basePath, bool extensionRecognized );
 	void finished();
 
 protected:
@@ -60,13 +60,14 @@ private:
 	class FetchedEvent : public QEvent
 	{
 	public:
-		FetchedEvent( const QString & _basePath, const QStringList & _filePaths ) :
+		FetchedEvent( const QString & _basePath, const QStringList & _filePaths, const bool _isExtensionRecognized ) :
 			QEvent( QEvent::Type(EventType_Fetched) ),
-			basePath( _basePath ), filePaths( _filePaths )
+			basePath( _basePath ), filePaths( _filePaths ), isExtensionRecognized( _isExtensionRecognized )
 		{}
 
 		QString basePath;
 		QStringList filePaths;
+		bool isExtensionRecognized;
 	};
 
 	class CurrentDirEvent : public QEvent
@@ -99,7 +100,7 @@ private:
 	void _run();
 
 	void _processUrls();
-	bool _postFetchEvent( const QString & basePath, const QStringList & filePaths );
+	bool _postFetchEvent( const QString & basePath, const QStringList & filePaths, bool isExtensionRecognized );
 
 private:
 	QList<QUrl> urls_;
