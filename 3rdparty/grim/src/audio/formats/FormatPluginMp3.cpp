@@ -464,12 +464,19 @@ qint64 Mp3FormatDevice::readData( char * const data, const qint64 maxSize )
 		size_t bytesRead;
 		const int readErrorCode = mpg123_read( mpgHandle_, reinterpret_cast<unsigned char*>( currentData ), bytesToRead, &bytesRead );
 
-//		mp3FormatDebug() << "readErrorCode =" << readErrorCode << ", bytesToRead =" << bytesToRead << ", bytesRead =" << bytesRead;
-
 		if ( readErrorCode != MPG123_OK && readErrorCode != MPG123_DONE )
 		{
 			mp3FormatDebug() << "mpg123_read() error:" << readErrorCode << mpg123_plain_strerror( readErrorCode );
-			return -1;
+
+			if ( readErrorCode == MPG123_NEED_MORE )
+			{
+				// mpg123 wants more, but file already at end, probably file is truncated
+				// ignore this error, return what is read so far and close the file
+			}
+			else
+			{
+				return -1;
+			}
 		}
 
 		if ( bytesRead < 0 )
@@ -482,7 +489,7 @@ qint64 Mp3FormatDevice::readData( char * const data, const qint64 maxSize )
 		bytesRemain -= bytesRead;
 		currentData += bytesRead;
 
-		if ( readErrorCode == MPG123_DONE )
+		if ( readErrorCode == MPG123_DONE || readErrorCode == MPG123_NEED_MORE )
 		{
 			atEnd_ = true;
 			outputSize_ = pos_;
