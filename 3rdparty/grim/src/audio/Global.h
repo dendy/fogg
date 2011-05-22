@@ -2,6 +2,7 @@
 #pragma once
 
 #include <qglobal.h>
+#include <QDebug>
 
 
 
@@ -19,3 +20,14 @@
 #else
 #	define GRIM_AUDIO_EXPORT __attribute__ ((visibility("default")))
 #endif
+
+
+
+
+#ifdef GRIM_AUDIO_DEBUG
+#	define grimAudioDebug() qDebug() << Q_FUNC_INFO
+#else
+#	define grimAudioDebug() QNoDebug()
+#endif
+
+#define grimAudioWarning() qWarning() << Q_FUNC_INFO
