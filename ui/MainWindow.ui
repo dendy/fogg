@@ -364,6 +364,9 @@
    <property name="toolTip">
     <string>Start conversion.</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
   </action>
   <action name="actionUnmark">
    <property name="text">
