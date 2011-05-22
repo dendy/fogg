@@ -532,11 +532,20 @@ void MainWindow::_updateTotalProgressBar()
 		const int value = qBound( 0, qRound( rootItem->totalProgress*kMaxTotalProgressBarValue ), kMaxTotalProgressBarValue );
 		const int percents = JobItemModel::progressToPercents( rootItem->totalProgress );
 
+		const int totalCount = jobItemModel_->allFileItems().count();
+		const int unfinishedCount = jobItemModel_->allUnfinishedFileItems().count();
+		const int finishedCount = totalCount - unfinishedCount;
+
+		// show 99% unless all jobs will be finished
+		const int truncatedPercents = unfinishedCount == 0 ?
+				JobItemModel::progressToPercents( 1.0 ) :
+				qMin( percents, JobItemModel::progressToPercents( 1.0 ) - 1 );
+
 		ui_.totalProgressBar->setValue( value );
 		ui_.totalProgressBar->setFormat( kProgressBarTemplate
-				.arg( jobItemModel_->allFileItems().count() - jobItemModel_->allUnfinishedFileItems().count() )
-				.arg( jobItemModel_->allFileItems().count() )
-				.arg( percents ) );
+				.arg( finishedCount )
+				.arg( totalCount )
+				.arg( truncatedPercents ) );
 	}
 }
 
