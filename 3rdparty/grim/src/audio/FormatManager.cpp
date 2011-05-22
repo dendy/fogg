@@ -59,14 +59,17 @@ QStringList FormatManager::allAvailableFileExtensions() const
 
 
 FormatFile * FormatManager::_createFormatFileFromPlugins( const FormatPluginList & plugins,
+		const FormatPluginList & exceptPlugins,
 		const QString & fileName, const QString & format )
 {
 	QWriteLocker fileFormatsLocker( &fileFormatsMutex_ );
 
 	for ( QListIterator<FormatPlugin*> it( plugins ); it.hasNext(); )
 	{
-		FormatPlugin * plugin = it.next();
-		FormatFile * file = plugin->createFile( fileName, format, FormatFile::OpenFlag_ReadTags );
+		FormatPlugin * const plugin = it.next();
+		if ( exceptPlugins.contains( plugin ) )
+			continue;
+		FormatFile * const file = plugin->createFile( fileName, format, FormatFile::OpenFlag_ReadTags );
 		Q_ASSERT( file );
 		if ( file->device()->open( QIODevice::ReadOnly ) )
 			return file;
@@ -81,39 +84,36 @@ FormatFile * FormatManager::createFormatFile( const QString & fileName, const QS
 {
 	// lookup plugin by the given format name
 	if ( !format.isNull() )
-		return _createFormatFileFromPlugins( audioFormatPluginsForFormat_.value( format ), fileName, format );
+	{
+		return _createFormatFileFromPlugins( audioFormatPluginsForFormat_.value( format ),
+				FormatPluginList(), fileName, format );
+	}
 
 	// lookup plugin by the file name extension
-	const int dotPos = fileName.lastIndexOf( QLatin1Char( '.' ) );
-	const int slashPos = fileName.lastIndexOf( QLatin1Char( '/' ) );
+	const QFileInfo fileInfo = QFileInfo( fileName );
+	const QString suffix = fileInfo.suffix();
 
-	FormatPluginList restPlugins = audioFormatPlugins_;
 	FormatPluginList extensionPlugins;
 
-	if ( dotPos != -1 && dotPos != fileName.length()-1 && slashPos < dotPos )
+	if ( !suffix.isEmpty() )
 	{
 		// file name has extension
-		const QString extension = fileName.mid( dotPos + 1 ).toLower();
-		Q_ASSERT( !extension.isEmpty() );
-
-		extensionPlugins = audioFormatPluginsForExtension_.value( extension );
-		FormatFile * file = _createFormatFileFromPlugins( extensionPlugins, fileName, format );
+		extensionPlugins = audioFormatPluginsForExtension_.value( suffix );
+		FormatFile * const file = _createFormatFileFromPlugins( extensionPlugins,
+				FormatPluginList(), fileName, format );
 		if ( file )
 			return file;
 	}
 
 	// file name has no extension, try all plugins on by one, except we checked earlier by extension
-	{
-		for ( QListIterator<FormatPlugin*> it( extensionPlugins ); it.hasNext(); )
-			restPlugins.removeOne( it.next() );
-	}
-
-	return _createFormatFileFromPlugins( restPlugins, fileName, format );
+	return _createFormatFileFromPlugins( audioFormatPlugins_, extensionPlugins, fileName, format );
 }
 
 
 void FormatManager::_addAudioFormatPlugin( FormatPlugin * const plugin )
 {
+	audioFormatPlugins_ << plugin;
+
 	foreach ( const QString & format, plugin->formats() )
 	{
 		if ( !availableFileFormats_.contains( format ) )

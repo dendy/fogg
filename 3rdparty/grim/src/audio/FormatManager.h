@@ -45,6 +45,7 @@ private:
 
 private:
 	FormatFile * _createFormatFileFromPlugins( const FormatPluginList & plugins,
+			const FormatPluginList & exceptPlugins,
 			const QString & fileName, const QString & format );
 	void _addAudioFormatPlugin( FormatPlugin * plugin );
 
