@@ -322,11 +322,38 @@ void JobItemModel::_setItemStateAndResult( Item * const item, const StateType st
 {
 	Q_ASSERT( state == State_Null || result == Converter::JobResult_Null );
 
+	const bool wasFinished = item->result != Converter::JobResult_Null;
 	const qreal wasProgress = item->progress();
 
 	item->state = state;
 	item->result = result;
 	item->modelState = QVariant();
+
+	if ( item->type == Item_File )
+	{
+		if ( wasFinished && item->result == Converter::JobResult_Null )
+		{
+			Q_ASSERT( !allUnfinishedFileItems().contains( item->asFile() ) );
+			allUnfinishedFileItems_ << item->asFile();
+
+			if ( item->asFile()->jobId == 0 )
+			{
+				Q_ASSERT( !allInactiveUnfinishedFileItems().contains( item->asFile() ) );
+				allInactiveUnfinishedFileItems_ << item->asFile();
+			}
+		}
+		else if ( !wasFinished && item->result != Converter::JobResult_Null )
+		{
+			Q_ASSERT( allUnfinishedFileItems().contains( item->asFile() ) );
+			allUnfinishedFileItems_.removeOne( item->asFile() );
+
+			if ( item->asFile()->jobId == 0 )
+			{
+				Q_ASSERT( allInactiveUnfinishedFileItems().contains( item->asFile() ) );
+				allInactiveUnfinishedFileItems_.removeOne( item->asFile() );
+			}
+		}
+	}
 
 	if ( item->parentItem )
 		item->parentItem->childItemChanged( item, item->weight(), wasProgress );
@@ -560,6 +587,9 @@ JobItemModel::FileItem * JobItemModel::_constructFileItem( const QString & fileN
 	fileItem->relativeDestinationPath = relativeDestinationPath;
 
 	allFileItems_ << fileItem;
+	allInactiveFileItems_ << fileItem;
+	allUnfinishedFileItems_ << fileItem;
+	allInactiveUnfinishedFileItems_ << fileItem;
 
 	endInsertRows();
 
@@ -592,8 +622,34 @@ void JobItemModel::_cleanupCachedItems( const QList<Item*> & items, const bool e
 			if ( item->asFile()->jobId != 0 )
 			{
 				fileItemForJobId_.remove( item->asFile()->jobId );
-				Q_ASSERT( allJobFileItems().contains( item->asFile() ) );
-				allJobFileItems_.removeOne( item->asFile() );
+				Q_ASSERT( allActiveFileItems().contains( item->asFile() ) );
+				allActiveFileItems_.removeOne( item->asFile() );
+			}
+			else
+			{
+				Q_ASSERT( allInactiveFileItems().contains( item->asFile() ) );
+				allInactiveFileItems_.removeOne( item->asFile() );
+			}
+
+			if ( item->asFile()->result == Converter::JobResult_Null )
+			{
+				Q_ASSERT( allUnfinishedFileItems().contains( item->asFile() ) );
+				allUnfinishedFileItems_.removeOne( item->asFile() );
+
+				if ( item->asFile()->jobId == 0 )
+				{
+					Q_ASSERT( allInactiveUnfinishedFileItems().contains( item->asFile() ) );
+					allInactiveUnfinishedFileItems_.removeOne( item->asFile() );
+				}
+				else
+				{
+					Q_ASSERT( !allInactiveUnfinishedFileItems().contains( item->asFile() ) );
+				}
+			}
+			else
+			{
+				Q_ASSERT( !allUnfinishedFileItems().contains( item->asFile() ) );
+				Q_ASSERT( !allInactiveUnfinishedFileItems().contains( item->asFile() ) );
 			}
 		}
 		else
@@ -610,26 +666,6 @@ void JobItemModel::setSourcePaths( const QStringList & paths )
 
 	foreach ( const QString & path, paths )
 		sourceDirs_ << QDir( path );
-
-	// reevaluate all item destination paths
-	DirItem * const newRootItem = new DirItem;
-
-	// FIXME:
-	foreach ( const FileItem * const fileItem, allFileItems() )
-	{
-		const QString relativePath = _evaluateRelativeDestinationPathForFile( fileItem->sourcePath, fileItem->basePath );
-		//addFileItem(  );
-	}
-
-	// reset model
-	DirItem * const oldRootItem = rootItem_;
-
-	beginResetModel();
-	rootItem_ = newRootItem;
-	endResetModel();
-
-	oldRootItem->clearChildItems();
-	delete oldRootItem;
 }
 
 
@@ -719,8 +755,17 @@ void JobItemModel::setFileItemJobIdForIndex( const QModelIndex & index, const in
 		fileItem->jobId = 0;
 		_changeFileItemState( fileItem, State_Null );
 
-		Q_ASSERT( allJobFileItems().contains( fileItem ) );
-		allJobFileItems_.removeOne( fileItem );
+		Q_ASSERT( allActiveFileItems().contains( fileItem ) );
+		allActiveFileItems_.removeOne( fileItem );
+
+		Q_ASSERT( !allInactiveFileItems().contains( fileItem ) );
+		allInactiveFileItems_ << fileItem;
+
+		if ( fileItem->result == Converter::JobResult_Null )
+		{
+			Q_ASSERT( !allInactiveUnfinishedFileItems().contains( fileItem ) );
+			allInactiveUnfinishedFileItems_ << fileItem;
+		}
 	}
 	else
 	{
@@ -732,8 +777,17 @@ void JobItemModel::setFileItemJobIdForIndex( const QModelIndex & index, const in
 			Q_ASSERT( !fileItemForJobId_.contains( jobId ) );
 			fileItemForJobId_[ jobId ] = fileItem;
 
-			Q_ASSERT( !allJobFileItems().contains( fileItem ) );
-			allJobFileItems_ << fileItem;
+			Q_ASSERT( !allActiveFileItems().contains( fileItem ) );
+			allActiveFileItems_ << fileItem;
+
+			Q_ASSERT( allInactiveFileItems().contains( fileItem ) );
+			allInactiveFileItems_.removeOne( fileItem );
+
+			if ( fileItem->result == Converter::JobResult_Null )
+			{
+				Q_ASSERT( allInactiveUnfinishedFileItems().contains( fileItem ) );
+				allInactiveUnfinishedFileItems_.removeOne( fileItem );
+			}
 		}
 	}
 }
@@ -817,8 +871,17 @@ void JobItemModel::setJobFinished( const int jobId, const int result )
 	FileItem * const fileItem = fileItemForJobId_.take( jobId );
 	Q_ASSERT( fileItem->jobId == jobId );
 
-	Q_ASSERT( allJobFileItems().contains( fileItem ) );
-	allJobFileItems_.removeOne( fileItem );
+	Q_ASSERT( allActiveFileItems().contains( fileItem ) );
+	allActiveFileItems_.removeOne( fileItem );
+
+	Q_ASSERT( !allInactiveFileItems().contains( fileItem ) );
+	allInactiveFileItems_ << fileItem;
+
+	if ( fileItem->result == Converter::JobResult_Null )
+	{
+		Q_ASSERT( !allInactiveUnfinishedFileItems().contains( fileItem ) );
+		allInactiveUnfinishedFileItems_ << fileItem;
+	}
 
 	fileItem->jobId = 0;
 	_changeFileItemState( fileItem, State_Null );

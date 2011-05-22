@@ -120,7 +120,10 @@ public:
 	void setSourcePaths( const QStringList & paths );
 
 	QList<const FileItem*> allFileItems() const;
-	QList<const FileItem*> allJobFileItems() const;
+	QList<const FileItem*> allInactiveFileItems() const;
+	QList<const FileItem*> allUnfinishedFileItems() const;
+	QList<const FileItem*> allInactiveUnfinishedFileItems() const;
+	QList<const FileItem*> allActiveFileItems() const;
 	QModelIndex indexForItem( const Item * item ) const;
 	const FileItem * fileItemForJobId( int jobId ) const;
 	const Item * itemForIndex( const QModelIndex & index ) const;
@@ -182,7 +185,10 @@ private:
 	QList<QDir> sourceDirs_;
 	DirItem * rootItem_;
 	QList<FileItem*> allFileItems_;
-	QList<FileItem*> allJobFileItems_;
+	QList<FileItem*> allInactiveFileItems_;
+	QList<FileItem*> allUnfinishedFileItems_;
+	QList<FileItem*> allInactiveUnfinishedFileItems_;
+	QList<FileItem*> allActiveFileItems_;
 	QHash<int,FileItem*> fileItemForJobId_;
 
 	// file item remove helper
@@ -227,8 +233,17 @@ inline int JobItemModel::Item::weight() const
 inline QList<const JobItemModel::FileItem*> JobItemModel::allFileItems() const
 { return *reinterpret_cast<const QList<const FileItem*>*>( &allFileItems_ ); }
 
-inline QList<const JobItemModel::FileItem*> JobItemModel::allJobFileItems() const
-{ return *reinterpret_cast<const QList<const FileItem*>*>( &allJobFileItems_ ); }
+inline QList<const JobItemModel::FileItem*> JobItemModel::allInactiveFileItems() const
+{ return *reinterpret_cast<const QList<const FileItem*>*>( &allInactiveFileItems_ ); }
+
+inline QList<const JobItemModel::FileItem*> JobItemModel::allUnfinishedFileItems() const
+{ return *reinterpret_cast<const QList<const FileItem*>*>( &allUnfinishedFileItems_ ); }
+
+inline QList<const JobItemModel::FileItem*> JobItemModel::allInactiveUnfinishedFileItems() const
+{ return *reinterpret_cast<const QList<const FileItem*>*>( &allInactiveUnfinishedFileItems_ ); }
+
+inline QList<const JobItemModel::FileItem*> JobItemModel::allActiveFileItems() const
+{ return *reinterpret_cast<const QList<const FileItem*>*>( &allActiveFileItems_ ); }
 
 inline const JobItemModel::FileItem * JobItemModel::aboutToRemoveFileItem() const
 { return aboutToRemoveFileItem_; }

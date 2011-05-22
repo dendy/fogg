@@ -519,22 +519,37 @@ QStringList MainWindow::_collectMediaFileFilters() const
 
 void MainWindow::_updateTotalProgressBar()
 {
-	const JobItemModel::DirItem * const rootItem = jobItemModel_->itemForIndex( QModelIndex() )->asDir();
-	const int value = qBound( 0, qRound( rootItem->totalProgress*kMaxTotalProgressBarValue ), kMaxTotalProgressBarValue );
-	const int percents = JobItemModel::progressToPercents( rootItem->totalProgress );
-	ui_.totalProgressBar->setValue( value );
-	ui_.totalProgressBar->setFormat( QString::fromLatin1( "%1 %" ).arg( percents ) );
+	static const QString kProgressBarTemplate = QLatin1String( "(%1 / %2) %3 %" );
+
+	if ( jobItemModel_->allFileItems().isEmpty() )
+	{
+		ui_.totalProgressBar->setValue( 0 );
+		ui_.totalProgressBar->setFormat( QString() );
+	}
+	else
+	{
+		const JobItemModel::DirItem * const rootItem = jobItemModel_->itemForIndex( QModelIndex() )->asDir();
+		const int value = qBound( 0, qRound( rootItem->totalProgress*kMaxTotalProgressBarValue ), kMaxTotalProgressBarValue );
+		const int percents = JobItemModel::progressToPercents( rootItem->totalProgress );
+
+		ui_.totalProgressBar->setValue( value );
+		ui_.totalProgressBar->setFormat( kProgressBarTemplate
+				.arg( jobItemModel_->allFileItems().count() - jobItemModel_->allUnfinishedFileItems().count() )
+				.arg( jobItemModel_->allFileItems().count() )
+				.arg( percents ) );
+	}
 }
 
 
 void MainWindow::_updateJobActions()
 {
 	const bool hasFileItems = !jobItemModel_->allFileItems().isEmpty();
-	const bool isConversionActive = !jobItemModel_->allJobFileItems().isEmpty();
+	const bool hasActiveItems = !jobItemModel_->allActiveFileItems().isEmpty();
+	const bool hasInactiveUnfinishedItems = !jobItemModel_->allInactiveUnfinishedFileItems().isEmpty();
 
-	ui_.actionStartConversion->setEnabled( hasFileItems && !isConversionActive );
-	ui_.actionStopConversion->setEnabled( hasFileItems && isConversionActive );
-	ui_.actionUnmark->setEnabled( hasFileItems && !isConversionActive );
+	ui_.actionStartConversion->setEnabled( hasFileItems && hasInactiveUnfinishedItems );
+	ui_.actionStopConversion->setEnabled( hasFileItems && hasActiveItems );
+	ui_.actionUnmark->setEnabled( hasFileItems && !hasActiveItems );
 	ui_.actionRemoveAll->setEnabled( hasFileItems );
 }
 
@@ -945,6 +960,14 @@ void MainWindow::on_actionRemoveSelected_triggered()
 
 void MainWindow::on_actionRemoveAll_triggered()
 {
+	if ( !jobItemModel_->allActiveFileItems().isEmpty() )
+	{
+		if ( QMessageBox::question( this, Global::makeWindowTitle( "Removing all files" ),
+				tr( "Conversion is ongoing, do you really want to stop it and clear the list?" ),
+				QMessageBox::Yes | QMessageBox::No, QMessageBox::No ) != QMessageBox::Yes )
+			return;
+	}
+
 	jobItemModel_->removeAllItems();
 }
 
@@ -959,6 +982,8 @@ void MainWindow::on_actionUnmark_triggered()
 		const QModelIndex index = jobItemModel_->indexForItem( fileItem );
 		jobItemModel_->setFileItemUnmarkedForIndex( index );
 	}
+
+	_updateJobActions();
 }
 
 
@@ -1027,15 +1052,9 @@ void MainWindow::on_actionStartConversion_triggered()
 
 	const QDir targetDir = QDir( currentTarget.path );
 
-	foreach ( const JobItemModel::FileItem * const fileItem, jobItemModel_->allFileItems() )
+	foreach ( const JobItemModel::FileItem * const fileItem, jobItemModel_->allInactiveFileItems() )
 	{
-		if ( fileItem->jobId != 0 )
-		{
-			// already scheduled to convert, skipping
-			continue;
-		}
-
-		if ( fileItem->result == Converter::JobResult_Done )
+		if ( fileItem->result != Converter::JobResult_Null )
 		{
 			// already finished, skipping
 			continue;
@@ -1057,14 +1076,15 @@ void MainWindow::on_actionStopConversion_triggered()
 {
 	converter_->abortAllJobs();
 
-	foreach ( const JobItemModel::FileItem * const fileItem, jobItemModel_->allJobFileItems() )
+	foreach ( const JobItemModel::FileItem * const fileItem, jobItemModel_->allActiveFileItems() )
 	{
 		const QModelIndex index = jobItemModel_->indexForItem( fileItem );
 		jobItemModel_->setFileItemJobIdForIndex( index, 0 );
 		jobItemModel_->setFileItemProgressForIndex( index, 0 );
 	}
 
-	Q_ASSERT( jobItemModel_->allJobFileItems().isEmpty() );
+	Q_ASSERT( jobItemModel_->allActiveFileItems().isEmpty() );
+	Q_ASSERT( jobItemModel_->allFileItems().count() == jobItemModel_->allInactiveFileItems().count() );
 
 	_updateJobActions();
 }
@@ -1072,7 +1092,7 @@ void MainWindow::on_actionStopConversion_triggered()
 
 void MainWindow::on_actionQuit_triggered()
 {
-	if ( !jobItemModel_->allJobFileItems().isEmpty() )
+	if ( !jobItemModel_->allActiveFileItems().isEmpty() )
 	{
 		if ( QMessageBox::question( this,
 				Global::makeWindowTitle( tr( "Quit confirmation" ) ),
