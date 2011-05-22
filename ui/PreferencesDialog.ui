@@ -58,7 +58,7 @@
          <item row="2" column="0">
           <widget class="QLabel" name="defaultEncodingQualityStaticLabel">
            <property name="text">
-            <string>Default encoding quality:</string>
+            <string>Encoding quality:</string>
            </property>
           </widget>
          </item>

@@ -984,7 +984,7 @@ void MainWindow::on_actionAddFiles_triggered()
 		return;
 
 	const QStringList filePaths = QFileDialog::getOpenFileNames( this,
-			Global::makeWindowTitle( tr( "Select audio files" ) ),
+			Global::makeWindowTitle( tr( "Select media files" ) ),
 			config_->lastUsedFilesDirPath(), _collectMediaFileFilterString() );
 
 	if ( filePaths.isEmpty() )
@@ -1006,7 +1006,7 @@ void MainWindow::on_actionAddDirectory_triggered()
 		return;
 
 	const QString dirPath = QFileDialog::getExistingDirectory( this,
-			Global::makeWindowTitle( tr( "Select directory with audio files" ) ),
+			Global::makeWindowTitle( tr( "Select directory with media files" ) ),
 			config_->lastUsedFilesDirPath() );
 
 	if ( dirPath.isEmpty() )

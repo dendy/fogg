@@ -255,7 +255,7 @@
    </widget>
    <widget class="QMenu" name="menuDevice">
     <property name="title">
-     <string>&amp;Device</string>
+     <string>&amp;Devices</string>
     </property>
     <addaction name="actionAddTarget"/>
     <addaction name="actionRemoveTarget"/>

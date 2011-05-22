@@ -267,7 +267,7 @@ Converter::JobResultType Job::_runBody()
 	const int channelCount = sourceAudioFile_->channels();
 	if ( channelCount != 1 && channelCount != 2 )
 	{
-		// only mono and stereo audio files supported and this moment
+		// only mono and stereo audio streams supported at this moment
 		return Converter::JobResult_NotSupported;
 	}
 

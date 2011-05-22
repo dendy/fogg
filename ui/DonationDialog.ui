@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>439</width>
+    <width>441</width>
     <height>164</height>
    </rect>
   </property>
@@ -37,12 +37,6 @@
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>0</width>
-            <height>33</height>
-           </size>
-          </property>
          </spacer>
         </item>
         <item>
@@ -59,7 +53,7 @@
 Cheers.</string>
           </property>
           <property name="alignment">
-           <set>Qt::AlignHCenter|Qt::AlignTop</set>
+           <set>Qt::AlignCenter</set>
           </property>
           <property name="wordWrap">
            <bool>true</bool>
@@ -70,12 +64,6 @@ Cheers.</string>
          <spacer name="verticalSpacer">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
           </property>
          </spacer>
         </item>
