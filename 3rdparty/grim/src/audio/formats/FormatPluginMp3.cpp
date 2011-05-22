@@ -305,9 +305,6 @@ void Mp3FormatDevice::_readId3Tags( QMultiMap<QString,QString> & tags )
 		return;
 	}
 
-	mp3FormatDebug() << "id3v1 found =" << (id3v1 != 0);
-	mp3FormatDebug() << "id3v2 found =" << (id3v2 != 0);
-
 	QString title;
 	QString artist;
 	QString album;
@@ -322,13 +319,6 @@ void Mp3FormatDevice::_readId3Tags( QMultiMap<QString,QString> & tags )
 		album = _fromMpgString( id3v2->album );
 		year = _fromMpgString( id3v2->year );
 		genre = _fromMpgString( id3v2->genre );
-
-		mp3FormatDebug() << "id3v2 tags:";
-		mp3FormatDebug() << "title   :" << title;
-		mp3FormatDebug() << "artist  :" << artist;
-		mp3FormatDebug() << "album   :" << album;
-		mp3FormatDebug() << "year    :" << year;
-		mp3FormatDebug() << "genre   :" << genre;
 	}
 
 	if ( id3v1 )
@@ -343,13 +333,6 @@ void Mp3FormatDevice::_readId3Tags( QMultiMap<QString,QString> & tags )
 			year = _fromRawString( id3v1->year, 4 );
 		if ( trackNumber == -1 )
 			trackNumber = static_cast<unsigned char>( id3v1->comment[29] );
-
-		mp3FormatDebug() << "id3v1 tags:";
-		mp3FormatDebug() << "title   :" << title;
-		mp3FormatDebug() << "artist  :" << artist;
-		mp3FormatDebug() << "album   :" << album;
-		mp3FormatDebug() << "year    :" << year;
-		mp3FormatDebug() << "track   :" << trackNumber;
 	}
 
 	if ( !title.isNull() )

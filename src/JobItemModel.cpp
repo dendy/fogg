@@ -138,8 +138,6 @@ void JobItemModel::DirItem::childItemChanged( const Item * const item, const int
 	const int selfWasWeight = totalWeight;
 	const qreal selfWasProgress = totalProgress;
 
-	foggDebug() << item->name << wasProgress << itemProgress;
-
 	totalWeight = newTotalWeight;
 	totalProgress = newProgress;
 

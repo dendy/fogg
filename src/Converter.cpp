@@ -285,8 +285,6 @@ Converter::JobResultType Job::_runBody()
 	{
 		tagIterator.next();
 
-		foggDebug() << "found tag: key =" << tagIterator.key() << ", value =" << tagIterator.value();
-
 		const QString tagKey = tagIterator.key().toUpper();
 		const QString tagValue = (prependYearToAlbum_ && tagKey == kVorbisTagAlbum) ?
 				QString::fromLatin1( "%1 - %2" ).arg( dateTagValue.toInt(), 4, 10, QLatin1Char( '0' ) ).arg( tagIterator.value() ) :
