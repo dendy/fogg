@@ -57,7 +57,7 @@ include( "${My_UTIL_SCRIPT}" )
 # 2. add update_my_translations target as dependency to build process, this will issue .ts
 #    updates automatically each time build runs.
 
-macro( my_create_translation TS_FILE QM_FILE TS_TARGET )
+macro( my_create_translation TS_FILE QM_FILE TS_TARGET TS_NO_OBSOLETED_TARGET )
 
 	# check for lupdate and lrelease availability
 	if ( NOT QT_LUPDATE_EXECUTABLE OR NOT QT_LRELEASE_EXECUTABLE )
@@ -74,6 +74,7 @@ macro( my_create_translation TS_FILE QM_FILE TS_TARGET )
 
 	# targets
 	set( _ts_file_target "${_qm_dir}/${_ts_filename}.target" )
+	set( _ts_file_no_obsoleted_file_target "${_qm_dir}/${_ts_filename}-no-obsoleted.target" )
 
 	# rule to generate .pro file
 	set( _pro_file "${_qm_dir}/${_ts_filename_we}.pro" )
@@ -108,16 +109,27 @@ macro( my_create_translation TS_FILE QM_FILE TS_TARGET )
 			-P "${My_UPDATE_TS_FILE_SCRIPT}"
 		DEPENDS
 			"${_pro_file}"
+			"${TS_FILE}"
+			${My_UPDATE_TS_FILE_SCRIPT}
+	)
+
+	add_custom_command( OUTPUT "${_ts_file_no_obsoleted_file_target}"
+		COMMAND "${CMAKE_COMMAND}"
+			-D "PRO_FILE=${_pro_file}"
+			-D "TS_FILE_TARGET=${_ts_file_no_obsoleted_file_target}"
+			-D "TS_FILE=${TS_FILE}"
+			-D "LUPDATE_COMMAND=${QT_LUPDATE_EXECUTABLE}"
+			-D "LUPDATE_OPTIONS=${_columned_lupdate_options}:-no-obsolete"
+			-D "My_UTIL_SCRIPT=${My_UTIL_SCRIPT}"
+			-P "${My_UPDATE_TS_FILE_SCRIPT}"
+		DEPENDS
+			"${_pro_file}"
+			"${TS_FILE}"
 			${My_UPDATE_TS_FILE_SCRIPT}
 	)
 
 	set( ${TS_TARGET} "${_ts_file_target}" )
-
-#	# run lupdate once if .ts file not exists
-#	if ( NOT EXISTS "${_ts_file_absolute}" )
-#		my_make_file_directory( "${_ts_file_absolute}" )
-#		execute_process( COMMAND "${QT_LUPDATE_EXECUTABLE}" ${_lupdate_options} "${_pro_file}" -ts "${_ts_file_absolute}" )
-#	endif()
+	set( ${TS_NO_OBSOLETED_TARGET} "${_ts_file_no_obsoleted_file_target}" )
 
 	# rule to generate .qm from .ts
 	add_custom_command( OUTPUT "${QM_FILE}"

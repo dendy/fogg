@@ -218,6 +218,7 @@ add_dependencies( Fogg ${Grim_TARGETS} )
 # localization
 set( Fogg_RESOLVED_TRANSLATION_LOCALES )
 set( Fogg_TS_TARGETS )
+set( Fogg_TS_NO_OBSOLETED_TARGETS )
 set( Fogg_QM_TARGETS )
 
 # collect list of locales
@@ -257,10 +258,12 @@ foreach ( _locale ${Fogg_RESOLVED_TRANSLATION_LOCALES} )
 
 		my_create_translation( "${_ts_file}" "${_qm_file}"
 			_ts_target
+			_ts_no_obsoleted_target
 			${TRANSLATION_SOURCES_FOR_MODULE_${_module}}
 			OPTIONS -silent )
 
 		list( APPEND Fogg_TS_TARGETS "${_ts_target}" )
+		list( APPEND Fogg_TS_NO_OBSOLETED_TARGETS "${_ts_no_obsoleted_target}" )
 		list( APPEND Fogg_QM_TARGETS "${_qm_file}" )
 	endforeach()
 endforeach()
@@ -272,3 +275,4 @@ add_custom_target( FoggTranslations ALL DEPENDS ${Fogg_QM_TARGETS} )
 # custom target to manually update .ts files from command line
 # run manually 'make translations' to update .ts files from sources
 add_custom_target( translations DEPENDS ${Fogg_TS_TARGETS} )
+add_custom_target( translations-without-obsoleted DEPENDS ${Fogg_TS_NO_OBSOLETED_TARGETS} )
