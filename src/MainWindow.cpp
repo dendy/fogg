@@ -35,7 +35,7 @@ namespace Fogg {
 
 
 
-static const QString kEnLanguageName = QLatin1String( "en" );
+static const QString kEnLocaleName = QLatin1String( "en" );
 static const int kFileFetchDialogAppearTimeout = 1000;
 static const int kMaxTotalProgressBarValue = 10000;
 
@@ -289,10 +289,11 @@ MainWindow::MainWindow( Config * const config, Converter * const converter ) :
 	localizationManager_->loadTranslations( translationsDirPath_ );
 	foggDebug() << "Found locales:" << localizationManager_->names();
 
-	// save 'en' localization
-	localizationManager_->setFallbackLocalization( localizationManager_->localizationForName( kEnLanguageName ) );
+	// set 'en' localization as fallback
+	const QLocale enLocale = QLocale( kEnLocaleName );
+	localizationManager_->setFallbackLocalization( localizationManager_->localizationForLocale( enLocale ) );
 	if ( localizationManager_->fallbackLocalization().isNull() )
-		foggWarning() << "No 'en' translation found";
+		foggWarning() << "No 'en' localization found";
 
 	if ( config_->language().isEmpty() )
 	{
@@ -304,7 +305,7 @@ MainWindow::MainWindow( Config * const config, Converter * const converter ) :
 		const Grim::Tools::LocalizationInfo localization = localizationManager_->localizationForName( config_->language() );
 		if ( localization.isNull() )
 		{
-			foggWarning() << "No translation found for locale:" << config_->language();
+			foggWarning() << "No localization found for locale:" << config_->language();
 			config_->setLanguage( QString() );
 			localizationManager_->setCurrentLocalizationFromSystemLocale();
 		}
