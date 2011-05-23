@@ -148,7 +148,7 @@ private:
 	void _setJobItemModelSourcePaths();
 	void _startFileFetch( const QList<QUrl> & urls );
 	void _finishFileFetch();
-	bool _tryAddFile( const QString & filePath, const QString & basePath );
+	bool _tryAddFile( const QString & filePath, const QString & basePath, const QString & format );
 
 private slots:
 	void _aboutToQuit();
@@ -156,6 +156,7 @@ private slots:
 	void _jobItemModelContentsChanged();
 
 	void _jobStarted( int jobId );
+	void _jobResolvedFormat( int jobId, const QString & format );
 	void _jobProgress( int jobId, qreal progress );
 	void _jobFinished( int jobId, int result );
 

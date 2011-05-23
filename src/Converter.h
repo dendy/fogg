@@ -60,13 +60,15 @@ public:
 
 	void setConcurrentThreadCount( int count );
 
-	int addJob( const QString & sourceFilePath, const QString & destinationFilePath, qreal quality, bool prependYearToAlbum );
+	int addJob( const QString & sourceFilePath, const QString & format,
+			const QString & destinationFilePath, qreal quality, bool prependYearToAlbum );
 	void abortJob( int jobId );
 	void abortAllJobs();
 	void wait();
 
 signals:
 	void jobStarted( int jobId );
+	void jobResolvedFormat( int jobId, const QString & format );
 	void jobProgress( int jobId, qreal progress );
 	void jobFinished( int jobId, int result );
 
@@ -77,6 +79,7 @@ private:
 	enum EventType
 	{
 		EventType_JobStarted = QEvent::User + 1,
+		EventType_JobResolvedFormat,
 		EventType_JobProgress,
 		EventType_JobFinished
 	};
@@ -90,6 +93,17 @@ private:
 		{}
 
 		Job * const job;
+	};
+
+	class JobResolvedFormatEvent : public JobEvent
+	{
+	public:
+		JobResolvedFormatEvent( Job * const job, const QString & _format ) :
+			JobEvent( job, EventType_JobResolvedFormat ),
+			format( _format )
+		{}
+
+		QString format;
 	};
 
 private:
@@ -113,6 +127,7 @@ public:
 	int id() const;
 
 	QString sourceFilePath() const;
+	QString format() const;
 	QString destinationFilePath() const;
 	Converter::JobResultType result() const;
 
@@ -131,8 +146,8 @@ protected:
 	void run();
 
 private:
-	Job( Converter * converter, int id, const QString & sourceFilePath, const QString & destinationFilePath, qreal quality,
-			bool prependYearToAlbum );
+	Job( Converter * converter, int id, const QString & sourceFilePath, const QString & format,
+			const QString & destinationFilePath, qreal quality, bool prependYearToAlbum );
 
 	Converter::JobResultType _runBody();
 	QString _findDateTag( const QMultiMap<QString,QString> & tags ) const;
@@ -143,6 +158,7 @@ private:
 	int id_;
 
 	QString sourceFilePath_;
+	QString format_;
 	QString destinationFilePath_;
 	qreal quality_;
 	bool prependYearToAlbum_;
@@ -178,6 +194,9 @@ inline int Job::id() const
 
 inline QString Job::sourceFilePath() const
 { return sourceFilePath_; }
+
+inline QString Job::format() const
+{ return format_; }
 
 inline QString Job::destinationFilePath() const
 { return destinationFilePath_; }

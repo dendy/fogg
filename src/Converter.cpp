@@ -54,12 +54,12 @@ void Converter::setConcurrentThreadCount( const int count )
 }
 
 
-int Converter::addJob( const QString & sourceFilePath, const QString & destinationFilePath, const qreal quality,
-		const bool prependYearToAlbum )
+int Converter::addJob( const QString & sourceFilePath, const QString & format,
+		const QString & destinationFilePath, const qreal quality, const bool prependYearToAlbum )
 {
 	const int jobId = jobIdGenerator_.take();
 
-	Job * const job = new Job( this, jobId, sourceFilePath, destinationFilePath, quality, prependYearToAlbum );
+	Job * const job = new Job( this, jobId, sourceFilePath, format, destinationFilePath, quality, prependYearToAlbum );
 	jobForId_[ jobId ] = job;
 
 	jobThreadPool_->start( job );
@@ -102,19 +102,16 @@ void Converter::abortAllJobs()
 
 void Converter::wait()
 {
-	foggDebug() << jobForId_.count();
-
 	// collect all finished events from jobs to wake them
 	while ( !jobForId_.isEmpty() )
 	{
-		foggDebug() << "looping" << jobForId_.count();
 		QCoreApplication::sendPostedEvents( this, EventType_JobStarted );
+		QCoreApplication::sendPostedEvents( this, EventType_JobResolvedFormat );
 		QCoreApplication::sendPostedEvents( this, EventType_JobProgress );
 		QCoreApplication::sendPostedEvents( this, EventType_JobFinished );
 	}
 
 	// explicitly wait for thread pool
-	foggDebug() << "waiting thread pool";
 	jobThreadPool_->waitForDone();
 }
 
@@ -124,6 +121,7 @@ bool Converter::event( QEvent * const e )
 	switch ( e->type() )
 	{
 	case EventType_JobStarted:
+	case EventType_JobResolvedFormat:
 	case EventType_JobProgress:
 	case EventType_JobFinished:
 		const JobEvent * jobEvent = static_cast<JobEvent*>( e );
@@ -135,6 +133,11 @@ bool Converter::event( QEvent * const e )
 				emit jobStarted( jobEvent->job->id() );
 			break;
 
+		case EventType_JobResolvedFormat:
+			if ( !jobEvent->job->isAborted() )
+				emit jobResolvedFormat( jobEvent->job->id(), static_cast<const JobResolvedFormatEvent*>( jobEvent )->format );
+			break;
+
 		case EventType_JobProgress:
 			if ( !jobEvent->job->isAborted() )
 				emit jobProgress( jobEvent->job->id(), jobEvent->job->progress() );
@@ -143,10 +146,6 @@ bool Converter::event( QEvent * const e )
 		case EventType_JobFinished:
 			if ( !jobEvent->job->isAborted() )
 				emit jobFinished( jobEvent->job->id(), jobEvent->job->result() );
-
-			foggDebug() << "Job finished:" << jobEvent->job->sourceFilePath()
-				<< ", aborted =" << jobEvent->job->isAborted()
-				<< ", result =" << jobEvent->job->result();
 
 			jobForId_.remove( jobEvent->job->id() );
 			jobIdGenerator_.free( jobEvent->job->id() );
@@ -162,14 +161,15 @@ bool Converter::event( QEvent * const e )
 
 
 
-Job::Job( Converter * const converter, const int id, const QString & sourceFilePath, const QString & destinationFilePath,
-		const qreal quality, const bool prependYearToAlbum )
+Job::Job( Converter * const converter, const int id, const QString & sourceFilePath, const QString & format,
+		const QString & destinationFilePath, const qreal quality, const bool prependYearToAlbum )
 {
 	converter_ = converter;
 
 	id_ = id;
 
 	sourceFilePath_ = sourceFilePath;
+	format_ = format;
 	destinationFilePath_ = destinationFilePath;
 	quality_ = quality;
 	prependYearToAlbum_ = prependYearToAlbum;
@@ -196,7 +196,6 @@ void Job::run()
 			return;
 		}
 		isStarted_ = true;
-		foggDebug() << "started";
 		QCoreApplication::postEvent( converter_, new Converter::JobEvent( this, Converter::EventType_JobStarted ) );
 		waiter_.wait( &lock_ );
 	}
@@ -206,7 +205,6 @@ void Job::run()
 	// send finished event
 	{
 		QWriteLocker locker( &lock_ );
-		foggDebug() << "finished";
 		QCoreApplication::postEvent( converter_, new Converter::JobEvent( this, Converter::EventType_JobFinished ) );
 		waiter_.wait( &lock_ );
 	}
@@ -255,9 +253,16 @@ Converter::JobResultType Job::_runBody()
 	if ( !destinationFile_.isOpen() )
 		return Converter::JobResult_WriteError;
 
-	sourceAudioFile_ = converter_->audioFormatManager()->createFormatFile( sourceFilePath(), QString() );
+	sourceAudioFile_ = converter_->audioFormatManager()->createFormatFile( sourceFilePath(), format() );
 	if ( !sourceAudioFile_ )
 		return Converter::JobResult_NotSupported;
+
+	{
+		QWriteLocker locker( &lock_ );
+		QCoreApplication::postEvent( converter_,
+				new Converter::JobResolvedFormatEvent( this, sourceAudioFile_->resolvedFormat() ) );
+		waiter_.wait( &lock_ );
+	}
 
 	const int channelCount = sourceAudioFile_->channels();
 	if ( channelCount != 1 && channelCount != 2 )

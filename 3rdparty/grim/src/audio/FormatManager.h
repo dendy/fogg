@@ -40,6 +40,8 @@ public:
 
 	FormatFile * createFormatFile( const QString & fileName, const QString & format );
 
+	QStringList formatsForExtension( const QString & extension ) const;
+
 private:
 	typedef QList<FormatPlugin*> FormatPluginList;
 
@@ -56,6 +58,7 @@ private:
 	QList<FormatPlugin*> audioFormatPlugins_;
 	QHash<QString,FormatPluginList> audioFormatPluginsForFormat_;
 	QHash<QString,FormatPluginList> audioFormatPluginsForExtension_;
+	QHash<QString,QStringList> audioFormatsForExtension_;
 };
 
 

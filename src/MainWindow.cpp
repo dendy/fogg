@@ -334,6 +334,7 @@ MainWindow::MainWindow( Config * const config, Converter * const converter ) :
 
 	// converter
 	connect( converter_, SIGNAL(jobStarted(int)), SLOT(_jobStarted(int)) );
+	connect( converter_, SIGNAL(jobResolvedFormat(int,QString)), SLOT(_jobResolvedFormat(int,QString)) );
 	connect( converter_, SIGNAL(jobProgress(int,qreal)), SLOT(_jobProgress(int,qreal)) );
 	connect( converter_, SIGNAL(jobFinished(int,int)), SLOT(_jobFinished(int,int)) );
 
@@ -648,7 +649,7 @@ void MainWindow::_finishFileFetch()
 		if ( nonRecognizedFilesDialog_->exec( filePaths ) == QDialog::Accepted )
 		{
 			foreach ( const FetchedFileInfo & fetchFileInfo, nonRecognizedFetchedFileInfos_ )
-				_tryAddFile( fetchFileInfo.filePath, fetchFileInfo.basePath );
+				_tryAddFile( fetchFileInfo.filePath, fetchFileInfo.basePath, QString() );
 		}
 	}
 
@@ -669,10 +670,10 @@ void MainWindow::_finishFileFetch()
 }
 
 
-bool MainWindow::_tryAddFile( const QString & filePath, const QString & basePath )
+bool MainWindow::_tryAddFile( const QString & filePath, const QString & basePath, const QString & format )
 {
 	bool isAdded;
-	const QModelIndex index = jobItemModel_->addFile( filePath, basePath, isAdded );
+	const QModelIndex index = jobItemModel_->addFile( filePath, basePath, format, isAdded );
 
 	if ( !index.isValid() )
 	{
@@ -814,6 +815,12 @@ void MainWindow::_jobStarted( const int jobId )
 }
 
 
+void MainWindow::_jobResolvedFormat( const int jobId, const QString & format )
+{
+	jobItemModel_->setJobResolvedFormat( jobId, format );
+}
+
+
 void MainWindow::_jobProgress( const int jobId, const qreal progress )
 {
 	const JobItemModel::FileItem * const fileItem = jobItemModel_->fileItemForJobId( jobId );
@@ -846,7 +853,11 @@ void MainWindow::_fetched( const QString & filePath, const QString & basePath, c
 		return;
 	}
 
-	if ( !_tryAddFile( filePath, basePath ) )
+	const QString extension = QFileInfo( filePath ).suffix();
+	const QStringList formats = converter_->audioFormatManager()->formatsForExtension( extension );
+	Q_ASSERT( !formats.isEmpty() );
+
+	if ( !_tryAddFile( filePath, basePath, formats.first() ) )
 		return;
 }
 
@@ -1114,7 +1125,7 @@ void MainWindow::on_actionStartConversion_triggered()
 			continue;
 		}
 
-		const int jobId = converter_->addJob( fileItem->sourcePath,
+		const int jobId = converter_->addJob( fileItem->sourcePath, fileItem->format,
 				targetDir.absoluteFilePath( fileItem->relativeDestinationPath ),
 				currentTarget.quality, currentTarget.prependYearToAlbum );
 

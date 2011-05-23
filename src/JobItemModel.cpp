@@ -231,6 +231,8 @@ QString JobItemModel::_nameForColumn( const ColumnType column )
 		return tr( "Progress" );
 	case Column_State:
 		return tr( "State" );
+	case Column_Format:
+		return tr( "Format" );
 	}
 
 	Q_ASSERT( false );
@@ -276,6 +278,13 @@ QString JobItemModel::_nameForJobResult( const int result )
 	}
 
 	return tr( "Unknown" );
+}
+
+
+void JobItemModel::_retranslate()
+{
+	autoFormatTemplate_ = tr( "Auto" );
+	resolvedAutoFormatTemplate_ = autoFormatTemplate_ + QLatin1String( " (%1)" );
 }
 
 
@@ -357,6 +366,13 @@ void JobItemModel::_setItemStateAndResult( Item * const item, const StateType st
 
 	if ( item->parentItem )
 		item->parentItem->childItemChanged( item, item->weight(), wasProgress );
+}
+
+
+void JobItemModel::_setFileItemResolvedFormat( FileItem * const fileItem, const QString & format )
+{
+	fileItem->resolvedFormat = format;
+	fileItem->modelFormat = QVariant();
 }
 
 
@@ -443,6 +459,37 @@ void JobItemModel::_updateItemModelState( const Item * const item ) const
 }
 
 
+void JobItemModel::_updateItemModelFormat( const Item * const item ) const
+{
+	if ( !item->modelFormat.isNull() )
+		return;
+
+	switch ( item->type )
+	{
+	case Item_Dir:
+		item->modelFormat = QVariant::fromValue( QString() );
+		break;
+
+	case Item_File:
+		if ( item->asFile()->format.isEmpty() )
+		{
+			if ( item->asFile()->resolvedFormat.isNull() )
+				item->modelFormat = autoFormatTemplate_;
+			else
+				item->modelFormat = QVariant::fromValue( resolvedAutoFormatTemplate_.arg( item->asFile()->resolvedFormat ) );
+		}
+		else
+		{
+			item->modelFormat = QVariant::fromValue( item->asFile()->format );
+		}
+		break;
+
+	default:
+		Q_ASSERT( false );
+	}
+}
+
+
 void JobItemModel::_changeFileItemProgress( FileItem * const fileItem, const qreal progress )
 {
 	const qreal wasProgress = fileItem->progress();
@@ -488,6 +535,18 @@ void JobItemModel::_changeFileItemResult( FileItem * const fileItem, const int r
 
 	const QModelIndex stateColumnIndex = _indexForItem( fileItem, Column_State );
 	emit dataChanged( stateColumnIndex, stateColumnIndex );
+}
+
+
+void JobItemModel::_changeFileItemResolvedFormat( FileItem * const fileItem, const QString & format )
+{
+	if ( fileItem->resolvedFormat == format )
+		return;
+
+	_setFileItemResolvedFormat( fileItem, format );
+
+	const QModelIndex formatColumnIndex = _indexForItem( fileItem, Column_Format );
+	emit dataChanged( formatColumnIndex, formatColumnIndex );
 }
 
 
@@ -557,7 +616,8 @@ JobItemModel::DirItem * JobItemModel::_constructDirItem( const QString & dirName
 
 
 JobItemModel::FileItem * JobItemModel::_constructFileItem( const QString & fileName, DirItem * const parentDirItem,
-		const QString & sourcePath, const QString & basePath, const QString & relativeDestinationPath, bool & isAdded )
+		const QString & sourcePath, const QString & basePath, const QString & format,
+		const QString & relativeDestinationPath, bool & isAdded )
 {
 	isAdded = false;
 
@@ -584,6 +644,7 @@ JobItemModel::FileItem * JobItemModel::_constructFileItem( const QString & fileN
 	parentDirItem->addChildItem( fileItem );
 
 	fileItem->sourcePath = sourcePath;
+	fileItem->format = format;
 	fileItem->relativeDestinationPath = relativeDestinationPath;
 
 	allFileItems_ << fileItem;
@@ -697,7 +758,7 @@ const JobItemModel::Item * JobItemModel::itemForIndex( const QModelIndex & index
   Returns added index for Column_Name on success.
   */
 
-QModelIndex JobItemModel::addFile( const QString & filePath, const QString & basePath, bool & isAdded )
+QModelIndex JobItemModel::addFile( const QString & filePath, const QString & basePath, const QString & format, bool & isAdded )
 {
 	isAdded = false;
 
@@ -733,7 +794,7 @@ QModelIndex JobItemModel::addFile( const QString & filePath, const QString & bas
 
 	bool isFileItemAdded;
 	FileItem * const fileItem = _constructFileItem( relativeDestinationFileInfo.fileName(), currentDirItem,
-			filePath, basePath, relativeDestinationFilePath, isFileItemAdded );
+			filePath, basePath, format, relativeDestinationFilePath, isFileItemAdded );
 
 	if ( !fileItem )
 		return QModelIndex();
@@ -865,6 +926,17 @@ void JobItemModel::setJobStarted( const int jobId )
 }
 
 
+void JobItemModel::setJobResolvedFormat( const int jobId, const QString & format )
+{
+	Q_ASSERT( fileItemForJobId_.contains( jobId ) );
+
+	FileItem * const fileItem = fileItemForJobId_.value( jobId );
+	Q_ASSERT( fileItem->jobId == jobId );
+
+	_changeFileItemResolvedFormat( fileItem, format );
+}
+
+
 void JobItemModel::setJobFinished( const int jobId, const int result )
 {
 	Q_ASSERT( fileItemForJobId_.contains( jobId ) );
@@ -970,6 +1042,14 @@ QVariant JobItemModel::data( const QModelIndex & index, const int role ) const
 			return item->modelState;
 		}
 		return QVariant();
+	case Column_Format:
+		switch ( role )
+		{
+		case Qt::DisplayRole:
+			_updateItemModelFormat( item );
+			return item->modelFormat;
+		}
+		return QVariant();
 	}
 
 	return QVariant();
@@ -987,6 +1067,19 @@ QVariant JobItemModel::headerData( const int column, const Qt::Orientation orien
 	}
 
 	return QVariant();
+}
+
+
+bool JobItemModel::event( QEvent * const e )
+{
+	switch ( e->type() )
+	{
+	case QEvent::LanguageChange:
+		_retranslate();
+		break;
+	}
+
+	return QObject::event( e );
 }
 
 

@@ -22,7 +22,8 @@ public:
 		Column_Name         = 0,
 		Column_Progress     = 1,
 		Column_State        = 2,
-		Column_TotalColumns = 3
+		Column_Format       = 3,
+		Column_TotalColumns = 4
 	};
 
 	enum ItemType
@@ -61,6 +62,7 @@ public:
 		mutable QVariant modelName;
 		mutable QVariant modelProgress;
 		mutable QVariant modelState;
+		mutable QVariant modelFormat;
 
 	public:
 		const DirItem * asDir() const;
@@ -103,7 +105,10 @@ public:
 
 		QString sourcePath;
 		QString basePath;
+		QString format;
+
 		QString relativeDestinationPath;
+		QString resolvedFormat;
 
 		int jobId;
 
@@ -128,7 +133,7 @@ public:
 	const FileItem * fileItemForJobId( int jobId ) const;
 	const Item * itemForIndex( const QModelIndex & index ) const;
 
-	QModelIndex addFile( const QString & filePath, const QString & basePath, bool & isAdded );
+	QModelIndex addFile( const QString & filePath, const QString & basePath, const QString & format, bool & isAdded );
 	void setFileItemJobIdForIndex( const QModelIndex & index, int jobId );
 	void setFileItemUnmarkedForIndex( const QModelIndex & index );
 	void setFileItemProgressForIndex( const QModelIndex & index, qreal progress );
@@ -137,6 +142,7 @@ public:
 	void removeAllItems();
 
 	void setJobStarted( int jobId );
+	void setJobResolvedFormat( int jobId, const QString & format );
 	void setJobFinished( int jobId, int result );
 
 	const FileItem * aboutToRemoveFileItem() const;
@@ -154,10 +160,15 @@ signals:
 	void fileItemAboutToRemove();
 	void itemProgressChanged();
 
+protected:
+	bool event( QEvent * e );
+
 private:
 	static QString _nameForColumn( ColumnType column );
 	static QString _nameForStateAndResult( StateType state, int result );
 	static QString _nameForJobResult( int result );
+
+	void _retranslate();
 
 	Item * _itemForIndex( const QModelIndex & index ) const;
 	QModelIndex _indexForItem( Item * item, int column ) const;
@@ -165,20 +176,24 @@ private:
 	void _setItemName( Item * item, const QString & name );
 	void _setItemProgress( Item * item );
 	void _setItemStateAndResult( Item * item, StateType state, int result );
+	void _setFileItemResolvedFormat( FileItem * fileItem, const QString & format );
 
 	void _updateItemModelName( const Item * item ) const;
 	void _updateItemModelProgress( const Item * item ) const;
 	void _updateItemModelState( const Item * item ) const;
+	void _updateItemModelFormat( const Item * item ) const;
 
 	void _changeFileItemProgress( FileItem * fileItem, qreal progress );
 	void _changeFileItemState( FileItem * fileItem, StateType state );
 	void _changeFileItemResult( FileItem * fileItem, int result );
+	void _changeFileItemResolvedFormat( FileItem * fileItem, const QString & format );
 
 	QString _oggedFileName( const QString & filePath ) const;
 	QString _evaluateRelativeDestinationPathForFile( const QString & filePath, const QString & basePath ) const;
 	DirItem * _constructDirItem( const QString & dirName, DirItem * parentDirItem );
 	FileItem * _constructFileItem( const QString & fileName, DirItem * parentDirItem,
-			const QString & sourcePath, const QString & basePath, const QString & relativeDestinationPath, bool & isAdded );
+			const QString & sourcePath, const QString & basePath, const QString & format,
+			const QString & relativeDestinationPath, bool & isAdded );
 	void _cleanupCachedItems( const QList<Item*> & items, bool emitSignals );
 
 private:
@@ -196,6 +211,10 @@ private:
 
 	// item progress helper
 	const Item * progressChangedItem_;
+
+	// cached translations
+	QString autoFormatTemplate_;
+	QString resolvedAutoFormatTemplate_;
 };
 
 

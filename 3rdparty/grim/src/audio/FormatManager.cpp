@@ -110,6 +110,12 @@ FormatFile * FormatManager::createFormatFile( const QString & fileName, const QS
 }
 
 
+QStringList FormatManager::formatsForExtension( const QString & extension ) const
+{
+	return audioFormatsForExtension_.value( extension.toLower() );
+}
+
+
 void FormatManager::_addAudioFormatPlugin( FormatPlugin * const plugin )
 {
 	audioFormatPlugins_ << plugin;
@@ -123,10 +129,13 @@ void FormatManager::_addAudioFormatPlugin( FormatPlugin * const plugin )
 
 		foreach ( const QString & extension, plugin->extensions( format ) )
 		{
+			Q_ASSERT( extension.toLower() == extension );
+
 			if ( !allAvailableFileExtensions_.contains( extension ) )
 				allAvailableFileExtensions_ << extension;
 
 			audioFormatPluginsForExtension_[ extension ] << plugin;
+			audioFormatsForExtension_[ extension ] << format;
 		}
 	}
 }
