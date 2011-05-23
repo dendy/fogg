@@ -406,6 +406,17 @@ MainWindow::MainWindow( Config * const config, Converter * const converter ) :
 	jobItemModel_ = new JobItemModel( this );
 	ui_.jobView->setModel( jobItemModel_ );
 
+	const QList<int> visualColumnOrder = QList<int>()
+			<< JobItemModel::Column_Name
+			<< JobItemModel::Column_Format
+			<< JobItemModel::Column_Progress
+			<< JobItemModel::Column_State;
+	for ( int visualColumnIndex = 0; visualColumnIndex < visualColumnOrder.count(); ++visualColumnIndex )
+	{
+		const int currentVisualIndex = ui_.jobView->header()->visualIndex( visualColumnOrder.at( visualColumnIndex ) );
+		ui_.jobView->header()->moveSection( currentVisualIndex, visualColumnIndex );
+	}
+
 	connect( jobItemModel_, SIGNAL(rowsRemoved(QModelIndex,int,int)), SLOT(_jobItemModelContentsChanged()) );
 	connect( jobItemModel_, SIGNAL(rowsInserted(QModelIndex,int,int)), SLOT(_jobItemModelContentsChanged()) );
 	connect( jobItemModel_, SIGNAL(modelReset()), SLOT(_jobItemModelContentsChanged()) );
