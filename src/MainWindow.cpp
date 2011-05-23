@@ -862,6 +862,7 @@ void MainWindow::_fetchFinished()
 
 void MainWindow::_showFileFetcherDialog()
 {
+	fileFetcherDialog_->setFileCount( fetchedFileCount_ );
 	fileFetcherDialog_->show();
 }
 
