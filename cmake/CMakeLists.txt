@@ -151,6 +151,7 @@ endif()
 my_add_sources( Fogg
 	ROOT_DIR "${Fogg_DIR}/src"
 		AboutDialog
+		ButtonActionBinder
 		Config
 		Converter
 		DonationDialog
@@ -164,9 +165,8 @@ my_add_sources( Fogg
 		NonRecognizedFilesDialog
 		PoweredByWidget
 		PreferencesDialog
-		ButtonActionBinder
+		ProfileNameDialog
 		SkippedFilesDialog
-		TargetNameDialog
 
 	ROOT_DIR "${Fogg_DIR}/ui"
 		AboutDialog
@@ -177,8 +177,8 @@ my_add_sources( Fogg
 		NonRecognizedFilesDialog
 		PoweredByWidget
 		PreferencesDialog
+		ProfileNameDialog
 		SkippedFilesDialog
-		TargetNameDialog
 
 	ROOT_DIR "${Fogg_DIR}/res"
 		fogg.qrc

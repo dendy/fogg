@@ -27,10 +27,10 @@ class Config : public QObject
 	Q_OBJECT
 
 public:
-	class Target
+	class Profile
 	{
 	public:
-		Target() :
+		Profile() :
 			isNull_( true )
 		{}
 
@@ -81,19 +81,19 @@ public:
 	qreal defaultQuality() const;
 	void setDefaultQuality( qreal quality );
 
-	int addDeviceTarget();
-	void removeDeviceTarget( int deviceTargetId );
+	int addCustomProfile();
+	void removeCustomProfile( int customProfileId );
 
-	Target fileSystemTarget() const;
-	void setFileSystemTarget( const Target & target );
+	Profile fileSystemProfile() const;
+	void setFileSystemProfile( const Profile & profile );
 
-	QList<int> deviceTargetIds() const;
-	Target deviceTargetForId( int deviceTargetId ) const;
-	void setDeviceTargetForId( int deviceTargetId, const Target & target );
-	int deviceTargetIndexForId( int deviceTargetId ) const;
+	QList<int> customProfileIds() const;
+	Profile customProfileForId( int customProfileId ) const;
+	void setCustomProfileForId( int customProfileId, const Profile & profile );
+	int customProfileIndexForId( int customProfileId ) const;
 
-	int currentDeviceTargetIndex() const;
-	void setCurrentDeviceTargetIndex( int index );
+	int currentCustomProfileIndex() const;
+	void setCurrentCustomProfileIndex( int index );
 
 	QList<SourceDir> sourceDirs() const;
 	void setSourceDirs( const QList<SourceDir> & sourceDirs );
@@ -117,9 +117,9 @@ private:
 	void _clear();
 
 	QString _defaultFileSystemPath() const;
-	void _assertTarget( const Target & target );
-	Target _loadTargetFromSettings( QSettings & settings );
-	void _saveTargetToSettings( QSettings & settings, const Target & target );
+	void _assertProfile( const Profile & profile );
+	Profile _loadProfileFromSettings( QSettings & settings );
+	void _saveProfileToSettings( QSettings & settings, const Profile & profile );
 
 private:
 	// general
@@ -128,14 +128,14 @@ private:
 	int concurrentThreadCount_;
 	qreal defaultQuality_;
 
-	// targets
-	Target fileSystemTarget_;
+	// profiles
+	Profile fileSystemProfile_;
+	Grim::Tools::IdGenerator customProfileIdGenerator_;
+	QVector<Profile> customProfiles_;
+	QList<int> customProfileIds_;
+	int currentCustomProfileIndex_;
 
-	Grim::Tools::IdGenerator deviceTargetsIdGenerator_;
-	QVector<Target> deviceTargets_;
-	QList<int> deviceTargetIds_;
-	int currentDeviceTargetIndex_;
-
+	// sources
 	QList<SourceDir> sourceDirs_;
 
 	// user interface
@@ -163,17 +163,17 @@ inline int Config::concurrentThreadCount() const
 inline qreal Config::defaultQuality() const
 { return defaultQuality_; }
 
-inline QList<int> Config::deviceTargetIds() const
-{ return deviceTargetIds_; }
+inline QList<int> Config::customProfileIds() const
+{ return customProfileIds_; }
 
-inline Config::Target Config::fileSystemTarget() const
-{ return fileSystemTarget_; }
+inline Config::Profile Config::fileSystemProfile() const
+{ return fileSystemProfile_; }
 
-inline Config::Target Config::deviceTargetForId( const int deviceTargetId ) const
-{ return deviceTargets_.at( deviceTargetId ); }
+inline Config::Profile Config::customProfileForId( const int customProfileId ) const
+{ return customProfiles_.at( customProfileId ); }
 
-inline int Config::currentDeviceTargetIndex() const
-{ return currentDeviceTargetIndex_; }
+inline int Config::currentCustomProfileIndex() const
+{ return currentCustomProfileIndex_; }
 
 inline QList<Config::SourceDir> Config::sourceDirs() const
 {  return sourceDirs_; }

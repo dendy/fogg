@@ -3,7 +3,7 @@
 
 #include <QDialog>
 
-#include "ui_TargetNameDialog.h"
+#include "ui_ProfileNameDialog.h"
 
 
 
@@ -13,12 +13,12 @@ namespace Fogg {
 
 
 
-class TargetNameDialog : public QDialog
+class ProfileNameDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	TargetNameDialog( QWidget * parent = 0 );
+	ProfileNameDialog( QWidget * parent = 0 );
 
 	QString name() const;
 	void setName( const QString & name );
@@ -35,7 +35,7 @@ private:
 	void _retranslateUi();
 
 private:
-	Ui::TargetNameDialog ui_;
+	Ui::ProfileNameDialog ui_;
 };
 
 

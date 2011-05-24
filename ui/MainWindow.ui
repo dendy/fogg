@@ -16,28 +16,28 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout_5">
     <item>
-     <widget class="QGroupBox" name="targetGroupBox">
+     <widget class="QGroupBox" name="profileGroupBox">
       <property name="title">
-       <string>Target</string>
+       <string>Profile</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
-          <widget class="QWidget" name="targetComboBoxWidget" native="true">
+          <widget class="QWidget" name="profileComboBoxWidget" native="true">
            <layout class="QHBoxLayout" name="horizontalLayout_3">
             <property name="margin">
              <number>0</number>
             </property>
             <item>
-             <widget class="QLabel" name="targetStaticLabel">
+             <widget class="QLabel" name="profileNameStaticLabel">
               <property name="text">
-               <string>Target:</string>
+               <string>Name:</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="targetComboBox">
+             <widget class="QComboBox" name="profileComboBox">
               <property name="sizePolicy">
                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -50,13 +50,13 @@
           </widget>
          </item>
          <item>
-          <widget class="QToolButton" name="addTargetButton"/>
+          <widget class="QToolButton" name="addProfileButton"/>
          </item>
          <item>
-          <widget class="QToolButton" name="removeTargetButton"/>
+          <widget class="QToolButton" name="removeProfileButton"/>
          </item>
          <item>
-          <widget class="QToolButton" name="renameTargetButton"/>
+          <widget class="QToolButton" name="renameProfileButton"/>
          </item>
          <item>
           <spacer name="horizontalSpacer">
@@ -72,7 +72,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QCheckBox" name="targetPrependYearToAlbumCheckBox">
+          <widget class="QCheckBox" name="profilePrependYearToAlbumCheckBox">
            <property name="text">
             <string>Prepend year to album</string>
            </property>
@@ -86,31 +86,31 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="staticEncodingQualityLabel">
+          <widget class="QLabel" name="encodingQualityStaticLabel">
            <property name="text">
             <string>Encoding quality:</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="Fogg::EncodingQualityWidget" name="targetQualityWidget" native="true"/>
+          <widget class="Fogg::EncodingQualityWidget" name="profileQualityWidget" native="true"/>
          </item>
         </layout>
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
-          <widget class="QLabel" name="staticTargetPathLabel">
+          <widget class="QLabel" name="profilePathStaticLabel">
            <property name="text">
             <string>Path:</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="targetPathLineEdit"/>
+          <widget class="QLineEdit" name="profilePathLineEdit"/>
          </item>
          <item>
-          <widget class="QToolButton" name="targetPathBrowseButton">
+          <widget class="QToolButton" name="profilePathBrowseButton">
            <property name="text">
             <string>...</string>
            </property>
@@ -253,16 +253,16 @@
     <addaction name="actionExpandAll"/>
     <addaction name="actionCollapseAll"/>
    </widget>
-   <widget class="QMenu" name="menuDevice">
+   <widget class="QMenu" name="menuProfile">
     <property name="title">
-     <string>&amp;Devices</string>
+     <string>&amp;Profiles</string>
     </property>
-    <addaction name="actionAddTarget"/>
-    <addaction name="actionRemoveTarget"/>
-    <addaction name="actionRenameTarget"/>
+    <addaction name="actionAddProfile"/>
+    <addaction name="actionRemoveProfile"/>
+    <addaction name="actionRenameProfile"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuDevice"/>
+   <addaction name="menuProfile"/>
    <addaction name="menuSettings"/>
    <addaction name="menuView"/>
    <addaction name="menuHelp"/>
@@ -396,40 +396,40 @@
     <string>Stop conversion.</string>
    </property>
   </action>
-  <action name="actionAddTarget">
+  <action name="actionAddProfile">
    <property name="icon">
     <iconset resource="../res/fogg.qrc">
      <normaloff>:/icons/plus.png</normaloff>:/icons/plus.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Add Device...</string>
+    <string>&amp;Add Profile...</string>
    </property>
    <property name="toolTip">
-    <string>Add new device.</string>
+    <string>Create new profile.</string>
    </property>
   </action>
-  <action name="actionRemoveTarget">
+  <action name="actionRemoveProfile">
    <property name="icon">
     <iconset resource="../res/fogg.qrc">
      <normaloff>:/icons/minus.png</normaloff>:/icons/minus.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Remove Device...</string>
+    <string>&amp;Remove Profile...</string>
    </property>
    <property name="toolTip">
-    <string>Remove current device.</string>
+    <string>Remove current profile.</string>
    </property>
   </action>
-  <action name="actionRenameTarget">
+  <action name="actionRenameProfile">
    <property name="icon">
     <iconset resource="../res/fogg.qrc">
      <normaloff>:/icons/edit.png</normaloff>:/icons/edit.png</iconset>
    </property>
    <property name="text">
-    <string>Re&amp;name Device...</string>
+    <string>Re&amp;name Profile...</string>
    </property>
    <property name="toolTip">
-    <string>Rename current device.</string>
+    <string>Rename current profile.</string>
    </property>
   </action>
  </widget>

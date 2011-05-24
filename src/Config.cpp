@@ -27,24 +27,24 @@ static const bool    kDefaultMainWindowStayOnTop = true;
 static const bool    kDefaultMainWindowMaximized = false;
 
 // property keys
-static const QString kLanguageKey                 = QLatin1String( "language" );
-static const QString kConcurrentThreadCountKey    = QLatin1String( "concurrent-thread-count" );
-static const QString kDefaultQualityKey           = QLatin1String( "default-quality" );
-static const QString kCurrentDeviceTargetIndexKey = QLatin1String( "current-device-target-index" );
-static const QString kFileSystemTargetKey         = QLatin1String( "file-system-target" );
-static const QString kDeviceTargetsKey            = QLatin1String( "device-targets" );
-static const QString kSourceDirsKey               = QLatin1String( "source-dirs" );
-static const QString kMainWindowStayOnTopKey      = QLatin1String( "main-window-stay-on-top" );
-static const QString kMainWindowGeometryKey       = QLatin1String( "main-window-geometry" );
-static const QString kMainWindowMaximizedKey      = QLatin1String( "main-window-maximized" );
-static const QString kLastUsedFilesDirPathKey     = QLatin1String( "last-user-files-dir-path" );
-static const QString kJobViewHeaderStateKey       = QLatin1String( "job-view-header-state" );
+static const QString kLanguageKey                  = QLatin1String( "language" );
+static const QString kConcurrentThreadCountKey     = QLatin1String( "concurrent-thread-count" );
+static const QString kDefaultQualityKey            = QLatin1String( "default-quality" );
+static const QString kCurrentCustomProfileIndexKey = QLatin1String( "current-custom-profile-index" );
+static const QString kFileSystemProfileKey         = QLatin1String( "file-system-profile" );
+static const QString kCustomProfilesKey            = QLatin1String( "custom-profiles" );
+static const QString kSourceDirsKey                = QLatin1String( "source-dirs" );
+static const QString kMainWindowStayOnTopKey       = QLatin1String( "main-window-stay-on-top" );
+static const QString kMainWindowGeometryKey        = QLatin1String( "main-window-geometry" );
+static const QString kMainWindowMaximizedKey       = QLatin1String( "main-window-maximized" );
+static const QString kLastUsedFilesDirPathKey      = QLatin1String( "last-user-files-dir-path" );
+static const QString kJobViewHeaderStateKey        = QLatin1String( "job-view-header-state" );
 
-// target property keys
-static const QString kTargetNameKey               = QLatin1String( "name" );
-static const QString kTargetPathKey               = QLatin1String( "path" );
-static const QString kTargetQualityKey            = QLatin1String( "quality" );
-static const QString kTargetPrependYearToAlbumKey = QLatin1String( "prepend-year-to-album" );
+// profile property keys
+static const QString kProfileNameKey               = QLatin1String( "name" );
+static const QString kProfilePathKey               = QLatin1String( "path" );
+static const QString kProfileQualityKey            = QLatin1String( "quality" );
+static const QString kProfilePrependYearToAlbumKey = QLatin1String( "prepend-year-to-album" );
 
 // source dir property keys
 static const QString kSourceDirPathKey = QLatin1String( "path" );
@@ -64,12 +64,12 @@ Config::Config( QObject * const parent ) :
 
 void Config::_clear()
 {
-	deviceTargetsIdGenerator_ = Grim::Tools::IdGenerator();
-	deviceTargetIds_.clear();
-	deviceTargets_.clear();
+	customProfileIdGenerator_ = Grim::Tools::IdGenerator();
+	customProfileIds_.clear();
+	customProfiles_.clear();
 
 	defaultQuality_ = kDefaultQualityValue;
-	currentDeviceTargetIndex_ = -1;
+	currentCustomProfileIndex_ = -1;
 
 	sourceDirs_.clear();
 
@@ -100,32 +100,32 @@ bool Config::load()
 	// load default quality
 	defaultQuality_ = settings.value( kDefaultQualityKey, kDefaultQualityValue ).toReal();
 
-	// load file system target
-	settings.beginGroup( kFileSystemTargetKey );
-	const Target fileSystemTarget = _loadTargetFromSettings( settings );
-	setFileSystemTarget( fileSystemTarget );
+	// load file system profile
+	settings.beginGroup( kFileSystemProfileKey );
+	const Profile fileSystemProfile = _loadProfileFromSettings( settings );
+	setFileSystemProfile( fileSystemProfile );
 	settings.endGroup();
 
-	// load device targets
-	const int deviceTargetCount = settings.beginReadArray( kDeviceTargetsKey );
-	for ( int deviceTargetIndex = 0; deviceTargetIndex < deviceTargetCount; ++deviceTargetIndex )
+	// load custom profiles
+	const int customProfileCount = settings.beginReadArray( kCustomProfilesKey );
+	for ( int customProfileIndex = 0; customProfileIndex < customProfileCount; ++customProfileIndex )
 	{
-		settings.setArrayIndex( deviceTargetIndex );
-		const Target deviceTarget = _loadTargetFromSettings( settings );
-		const int deviceTargetId = addDeviceTarget();
-		setDeviceTargetForId( deviceTargetId, deviceTarget );
+		settings.setArrayIndex( customProfileIndex );
+		const Profile customProfile = _loadProfileFromSettings( settings );
+		const int customProfileId = addCustomProfile();
+		setCustomProfileForId( customProfileId, customProfile );
 	}
 	settings.endArray();
 
-	// load current device target index
-	currentDeviceTargetIndex_ = settings.value( kCurrentDeviceTargetIndexKey, -1 ).toInt();
-	if ( currentDeviceTargetIndex_ == -1 || (currentDeviceTargetIndex_ >= 0 && currentDeviceTargetIndex_ < deviceTargetCount) )
+	// load current custom profile index
+	currentCustomProfileIndex_ = settings.value( kCurrentCustomProfileIndexKey, -1 ).toInt();
+	if ( currentCustomProfileIndex_ == -1 || (currentCustomProfileIndex_ >= 0 && currentCustomProfileIndex_ < customProfileCount) )
 	{
 		// index is valid
 	}
 	else
 	{
-		currentDeviceTargetIndex_ = -1;
+		currentCustomProfileIndex_ = -1;
 	}
 
 	// load source dirs
@@ -173,23 +173,23 @@ bool Config::save()
 	// save default quality
 	settings.setValue( kDefaultQualityKey, defaultQuality() );
 
-	// save file system target
-	settings.beginGroup( kFileSystemTargetKey );
-	_saveTargetToSettings( settings, fileSystemTarget() );
+	// save file system profile
+	settings.beginGroup( kFileSystemProfileKey );
+	_saveProfileToSettings( settings, fileSystemProfile() );
 	settings.endGroup();
 
-	// save device targets
-	settings.beginWriteArray( kDeviceTargetsKey, deviceTargetIds().count() );
-	for ( int deviceTargetIndex = 0; deviceTargetIndex < deviceTargetIds().count(); ++deviceTargetIndex )
+	// save custom profiles
+	settings.beginWriteArray( kCustomProfilesKey, customProfileIds().count() );
+	for ( int customProfileIndex = 0; customProfileIndex < customProfileIds().count(); ++customProfileIndex )
 	{
-		settings.setArrayIndex( deviceTargetIndex );
-		const int deviceTargetId = deviceTargetIds_.at( deviceTargetIndex );
-		_saveTargetToSettings( settings, deviceTargetForId( deviceTargetId ) );
+		settings.setArrayIndex( customProfileIndex );
+		const int customProfileId = customProfileIds_.at( customProfileIndex );
+		_saveProfileToSettings( settings, customProfileForId( customProfileId ) );
 	}
 	settings.endArray();
 
-	// save current device target index
-	settings.setValue( kCurrentDeviceTargetIndexKey, currentDeviceTargetIndex() );
+	// save current custom profile index
+	settings.setValue( kCurrentCustomProfileIndexKey, currentCustomProfileIndex() );
 
 	// save source dirs
 	settings.beginWriteArray( kSourceDirsKey );
@@ -235,63 +235,63 @@ void Config::setDefaultQuality( const qreal quality )
 }
 
 
-int Config::addDeviceTarget()
+int Config::addCustomProfile()
 {
-	const int deviceTargetId = deviceTargetsIdGenerator_.take();
+	const int customProfileId = customProfileIdGenerator_.take();
 
-	if ( deviceTargets_.size() <= deviceTargetId )
-		deviceTargets_.resize( deviceTargetId + 1 );
+	if ( customProfiles_.size() <= customProfileId )
+		customProfiles_.resize( customProfileId + 1 );
 
-	Target & target = deviceTargets_[ deviceTargetId ];
-	target.isNull_ = false;
-	target.path = _defaultFileSystemPath();
-	target.quality = defaultQuality_;
-	target.prependYearToAlbum = kDefaultPrependYearToAlbumValue;
+	Profile & profile = customProfiles_[ customProfileId ];
+	profile.isNull_ = false;
+	profile.path = _defaultFileSystemPath();
+	profile.quality = defaultQuality_;
+	profile.prependYearToAlbum = kDefaultPrependYearToAlbumValue;
 
-	deviceTargetIds_ << deviceTargetId;
+	customProfileIds_ << customProfileId;
 
-	return deviceTargetId;
+	return customProfileId;
 }
 
 
-void Config::removeDeviceTarget( const int deviceTargetId )
+void Config::removeCustomProfile( const int customProfileId )
 {
-	const int index = deviceTargetIndexForId( deviceTargetId );
-	deviceTargetIds_.removeAt( index );
-	deviceTargetsIdGenerator_.free( deviceTargetId );
+	const int index = customProfileIndexForId( customProfileId );
+	customProfileIds_.removeAt( index );
+	customProfileIdGenerator_.free( customProfileId );
 
-	if ( currentDeviceTargetIndex() != -1 && currentDeviceTargetIndex() == deviceTargetIds().count() )
-		setCurrentDeviceTargetIndex( deviceTargetIds().isEmpty() ? -1 : deviceTargetIds().count() - 1 );
+	if ( currentCustomProfileIndex() != -1 && currentCustomProfileIndex() == customProfileIds().count() )
+		setCurrentCustomProfileIndex( customProfileIds().isEmpty() ? -1 : customProfileIds().count() - 1 );
 }
 
 
-void Config::setFileSystemTarget( const Target & target )
+void Config::setFileSystemProfile( const Profile & profile )
 {
-	_assertTarget( target );
-	fileSystemTarget_ = target;
+	_assertProfile( profile );
+	fileSystemProfile_ = profile;
 }
 
 
-void Config::setDeviceTargetForId( const int deviceTargetId, const Target & target )
+void Config::setCustomProfileForId( const int customProfileId, const Profile & profile )
 {
-	_assertTarget( target );
-	Q_ASSERT( !deviceTargetsIdGenerator_.isFree( deviceTargetId ) );
-	deviceTargets_[ deviceTargetId ] = target;
+	_assertProfile( profile );
+	Q_ASSERT( !customProfileIdGenerator_.isFree( customProfileId ) );
+	customProfiles_[ customProfileId ] = profile;
 }
 
 
-int Config::deviceTargetIndexForId( const int deviceTargetId ) const
+int Config::customProfileIndexForId( const int customProfileId ) const
 {
-	const int index = deviceTargetIds().indexOf( deviceTargetId );
+	const int index = customProfileIds().indexOf( customProfileId );
 	Q_ASSERT( index != -1 );
 	return index;
 }
 
 
-void Config::setCurrentDeviceTargetIndex( const int index )
+void Config::setCurrentCustomProfileIndex( const int index )
 {
-	Q_ASSERT( index == -1 || (index >= 0 && index < deviceTargetIds().count() ) );
-	currentDeviceTargetIndex_ = index;
+	Q_ASSERT( index == -1 || (index >= 0 && index < customProfileIds().count() ) );
+	currentCustomProfileIndex_ = index;
 }
 
 
@@ -337,33 +337,32 @@ QString Config::_defaultFileSystemPath() const
 }
 
 
-void Config::_assertTarget( const Target & target )
+void Config::_assertProfile( const Profile & profile )
 {
-	Q_ASSERT( !target.isNull() );
-	Q_ASSERT( target.quality >= kMinimumQualityValue && target.quality <= kMaximumQualityValue );
+	Q_ASSERT( !profile.isNull() );
+	Q_ASSERT( profile.quality >= kMinimumQualityValue && profile.quality <= kMaximumQualityValue );
 }
 
 
-Config::Target Config::_loadTargetFromSettings( QSettings & settings )
+Config::Profile Config::_loadProfileFromSettings( QSettings & settings )
 {
-	Target target;
-	target.isNull_ = false;
-	target.name = settings.value( kTargetNameKey ).toString();
-	foggDebug() << target.name;
-	target.path = settings.value( kTargetPathKey, _defaultFileSystemPath() ).toString();
-	target.quality = qBound<qreal>( 0.0, settings.value( kTargetQualityKey, kDefaultQualityValue ).toReal(), 1.0 );
-	target.prependYearToAlbum = settings.value( kTargetPrependYearToAlbumKey, kDefaultPrependYearToAlbumValue ).toBool();
-	return target;
+	Profile profile;
+	profile.isNull_ = false;
+	profile.name = settings.value( kProfileNameKey ).toString();
+	profile.path = settings.value( kProfilePathKey, _defaultFileSystemPath() ).toString();
+	profile.quality = qBound<qreal>( 0.0, settings.value( kProfileQualityKey, kDefaultQualityValue ).toReal(), 1.0 );
+	profile.prependYearToAlbum = settings.value( kProfilePrependYearToAlbumKey, kDefaultPrependYearToAlbumValue ).toBool();
+	return profile;
 }
 
 
-void Config::_saveTargetToSettings( QSettings & settings, const Target & target )
+void Config::_saveProfileToSettings( QSettings & settings, const Profile & profile )
 {
-	_assertTarget( target );
-	settings.setValue( kTargetNameKey, target.name );
-	settings.setValue( kTargetPathKey, target.path );
-	settings.setValue( kTargetQualityKey, target.quality );
-	settings.setValue( kTargetPrependYearToAlbumKey, target.prependYearToAlbum );
+	_assertProfile( profile );
+	settings.setValue( kProfileNameKey, profile.name );
+	settings.setValue( kProfilePathKey, profile.path );
+	settings.setValue( kProfileQualityKey, profile.quality );
+	settings.setValue( kProfilePrependYearToAlbumKey, profile.prependYearToAlbum );
 }
 
 

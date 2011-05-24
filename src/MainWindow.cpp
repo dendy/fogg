@@ -18,7 +18,7 @@
 #include "Converter.h"
 #include "FileFetcher.h"
 #include "FileFetcherDialog.h"
-#include "TargetNameDialog.h"
+#include "ProfileNameDialog.h"
 #include "DonationDialog.h"
 #include "AboutDialog.h"
 #include "PreferencesDialog.h"
@@ -42,36 +42,36 @@ static const int kMaxTotalProgressBarValue = 10000;
 
 
 
-bool TargetItemModel::isDeviceTarget( const int targetId )
+bool ProfileItemModel::isCustomProfile( const int profileId )
 {
-	return targetId > 0;
+	return profileId > 0;
 }
 
 
-TargetItemModel::TargetItemModel( Config * const config, QObject * const parent ) :
+ProfileItemModel::ProfileItemModel( Config * const config, QObject * const parent ) :
 	QAbstractItemModel( parent ),
 	config_( config )
 {
 }
 
 
-TargetItemModel::~TargetItemModel()
+ProfileItemModel::~ProfileItemModel()
 {
 }
 
 
-int TargetItemModel::targetIdForRow( const int row ) const
+int ProfileItemModel::profileIdForRow( const int row ) const
 {
 	Q_ASSERT( row >= 0 && row < _rowCount() );
 
 	switch ( row )
 	{
 	case 0:
-		return TargetId_FileSystem;
+		return ProfileId_FileSystem;
 	case 1:
-		return TargetId_Null;
+		return ProfileId_Null;
 	default:
-		return config_->deviceTargetIds().at( row - 2 );
+		return config_->customProfileIds().at( row - 2 );
 	}
 
 	Q_ASSERT( false );
@@ -79,35 +79,35 @@ int TargetItemModel::targetIdForRow( const int row ) const
 }
 
 
-Config::Target TargetItemModel::targetForRow( const int row ) const
+Config::Profile ProfileItemModel::profileForRow( const int row ) const
 {
-	const int targetId = targetIdForRow( row );
+	const int profileId = profileIdForRow( row );
 
-	switch ( targetId )
+	switch ( profileId )
 	{
-	case TargetId_FileSystem:
-		return config_->fileSystemTarget();
-	case TargetId_Null:
-		return Config::Target();
+	case ProfileId_FileSystem:
+		return config_->fileSystemProfile();
+	case ProfileId_Null:
+		return Config::Profile();
 	default:
-		return config_->deviceTargetForId( targetId );
+		return config_->customProfileForId( profileId );
 	}
 
 	Q_ASSERT( false );
-	return Config::Target();
+	return Config::Profile();
 }
 
 
-int TargetItemModel::rowForTargetId( const int targetId ) const
+int ProfileItemModel::rowForProfileId( const int profileId ) const
 {
-	switch ( targetId )
+	switch ( profileId )
 	{
-	case TargetId_FileSystem:
+	case ProfileId_FileSystem:
 		return 0;
-	case TargetId_Null:
+	case ProfileId_Null:
 		return 1;
 	default:
-		return 2 + config_->deviceTargetIndexForId( targetId );
+		return 2 + config_->customProfileIndexForId( profileId );
 	}
 
 	Q_ASSERT( false );
@@ -115,51 +115,51 @@ int TargetItemModel::rowForTargetId( const int targetId ) const
 }
 
 
-void TargetItemModel::beginAddTarget()
+void ProfileItemModel::beginAddProfile()
 {
-	const int lastRow = _rowForDeviceTargetIndex( config_->deviceTargetIds().count() );
-	const int firstRow = config_->deviceTargetIds().isEmpty() ? rowForTargetId( TargetId_Null ) : lastRow;
+	const int lastRow = _rowForCustomProfileIndex( config_->customProfileIds().count() );
+	const int firstRow = config_->customProfileIds().isEmpty() ? rowForProfileId( ProfileId_Null ) : lastRow;
 
 	beginInsertRows( QModelIndex(), firstRow, lastRow );
 }
 
 
-void TargetItemModel::endAddTarget()
+void ProfileItemModel::endAddProfile()
 {
 	endInsertRows();
 }
 
 
-void TargetItemModel::beginChangeTarget( const int targetId )
+void ProfileItemModel::beginChangeProfile( const int profileId )
 {
-	targetIdBeingChanged_ = targetId;
+	profileIdBeingChanged_ = profileId;
 }
 
 
-void TargetItemModel::endChangeTarget()
+void ProfileItemModel::endChangeProfile()
 {
-	const int row = rowForTargetId( targetIdBeingChanged_ );
-	const QModelIndex targetModelIndex = index( row, 0 );
-	emit dataChanged( targetModelIndex, targetModelIndex );
+	const int row = rowForProfileId( profileIdBeingChanged_ );
+	const QModelIndex profileModelIndex = index( row, 0 );
+	emit dataChanged( profileModelIndex, profileModelIndex );
 }
 
 
-void TargetItemModel::beginRemoveTarget( const int targetId )
+void ProfileItemModel::beginRemoveProfile( const int profileId )
 {
-	const int lastRow = rowForTargetId( targetId );
-	const int firstRow = config_->deviceTargetIds().count() == 1 ? rowForTargetId( TargetId_Null ) : lastRow;
+	const int lastRow = rowForProfileId( profileId );
+	const int firstRow = config_->customProfileIds().count() == 1 ? rowForProfileId( ProfileId_Null ) : lastRow;
 
 	beginRemoveRows( QModelIndex(), firstRow, lastRow );
 }
 
 
-void TargetItemModel::endRemoveTarget()
+void ProfileItemModel::endRemoveProfile()
 {
 	endRemoveRows();
 }
 
 
-int TargetItemModel::rowCount( const QModelIndex & parent ) const
+int ProfileItemModel::rowCount( const QModelIndex & parent ) const
 {
 	if ( !parent.isValid() )
 		return _rowCount();
@@ -167,7 +167,7 @@ int TargetItemModel::rowCount( const QModelIndex & parent ) const
 }
 
 
-int TargetItemModel::columnCount( const QModelIndex & parent ) const
+int ProfileItemModel::columnCount( const QModelIndex & parent ) const
 {
 	if ( !parent.isValid() )
 		return 1;
@@ -175,31 +175,31 @@ int TargetItemModel::columnCount( const QModelIndex & parent ) const
 }
 
 
-QModelIndex TargetItemModel::parent( const QModelIndex & index ) const
+QModelIndex ProfileItemModel::parent( const QModelIndex & index ) const
 {
 	Q_UNUSED( index );
 	return QModelIndex();
 }
 
 
-QModelIndex TargetItemModel::index( const int row, const int column, const QModelIndex & parent ) const
+QModelIndex ProfileItemModel::index( const int row, const int column, const QModelIndex & parent ) const
 {
 	if ( !parent.isValid() && row >= 0 && row < _rowCount() && column == 0 )
-		return createIndex( row, column, targetIdForRow( row ) );
+		return createIndex( row, column, profileIdForRow( row ) );
 	return QModelIndex();
 }
 
 
-QVariant TargetItemModel::data( const QModelIndex & index, const int role ) const
+QVariant ProfileItemModel::data( const QModelIndex & index, const int role ) const
 {
 	if ( !index.isValid() )
 		return QVariant();
 
-	const int targetId = targetIdForRow( index.row() );
+	const int profileId = profileIdForRow( index.row() );
 
-	switch ( targetId )
+	switch ( profileId )
 	{
-	case TargetId_FileSystem:
+	case ProfileId_FileSystem:
 	{
 		switch ( role )
 		{
@@ -209,7 +209,7 @@ QVariant TargetItemModel::data( const QModelIndex & index, const int role ) cons
 	}
 		break;
 
-	case TargetId_Null:
+	case ProfileId_Null:
 	{
 		switch ( role )
 		{
@@ -221,11 +221,11 @@ QVariant TargetItemModel::data( const QModelIndex & index, const int role ) cons
 
 	default:
 	{
-		const Config::Target target = config_->deviceTargetForId( targetId );
+		const Config::Profile profile = config_->customProfileForId( profileId );
 		switch ( role )
 		{
 		case Qt::DisplayRole:
-			return target.name;
+			return profile.name;
 		}
 	}
 		break;
@@ -235,18 +235,18 @@ QVariant TargetItemModel::data( const QModelIndex & index, const int role ) cons
 }
 
 
-Qt::ItemFlags TargetItemModel::flags( const QModelIndex & index ) const
+Qt::ItemFlags ProfileItemModel::flags( const QModelIndex & index ) const
 {
 	if ( !index.isValid() )
 		return Qt::NoItemFlags;
 
-	const int targetId = targetIdForRow( index.row() );
+	const int profileId = profileIdForRow( index.row() );
 
-	switch ( targetId )
+	switch ( profileId )
 	{
-	case TargetId_Null:
+	case ProfileId_Null:
 		return Qt::NoItemFlags;
-	case TargetId_FileSystem:
+	case ProfileId_FileSystem:
 	default:
 		return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 	}
@@ -256,20 +256,20 @@ Qt::ItemFlags TargetItemModel::flags( const QModelIndex & index ) const
 }
 
 
-int TargetItemModel::_rowCount() const
+int ProfileItemModel::_rowCount() const
 {
-	// file system + separator + devices
-	const int deviceTargetCount = config_->deviceTargetIds().count();
-	return 1 + deviceTargetCount + (deviceTargetCount == 0 ? 0 : 1);
+	// file system profile + separator + custom profile
+	const int customProfileCount = config_->customProfileIds().count();
+	return 1 + customProfileCount + (customProfileCount == 0 ? 0 : 1);
 }
 
 
-int TargetItemModel::_rowForDeviceTargetIndex( const int deviceTargetIndex ) const
+int ProfileItemModel::_rowForCustomProfileIndex( const int customProfileIndex ) const
 {
-	Q_ASSERT( deviceTargetIndex >= 0 );
+	Q_ASSERT( customProfileIndex >= 0 );
 
 	// 2 == file system index + separator index
-	return deviceTargetIndex + 2;
+	return customProfileIndex + 2;
 }
 
 
@@ -279,7 +279,7 @@ MainWindow::MainWindow( Config * const config, Converter * const converter ) :
 	config_( config ),
 	converter_( converter )
 {
-	selfChangeCurrentTargetIndex_ = false;
+	selfChangeCurrentProfileIndex_ = false;
 	underDragging_ = false;
 
 	// localization
@@ -377,9 +377,9 @@ MainWindow::MainWindow( Config * const config, Converter * const converter ) :
 	new ButtonActionBinder( ui_.actionUnmark, ui_.unmarkButton, this );
 	new ButtonActionBinder( ui_.actionStartConversion, ui_.startConversionButton, this );
 	new ButtonActionBinder( ui_.actionStopConversion, ui_.stopConversionButton, this );
-	new ButtonActionBinder( ui_.actionAddTarget, ui_.addTargetButton, this );
-	new ButtonActionBinder( ui_.actionRemoveTarget, ui_.removeTargetButton, this );
-	new ButtonActionBinder( ui_.actionRenameTarget, ui_.renameTargetButton, this );
+	new ButtonActionBinder( ui_.actionAddProfile, ui_.addProfileButton, this );
+	new ButtonActionBinder( ui_.actionRemoveProfile, ui_.removeProfileButton, this );
+	new ButtonActionBinder( ui_.actionRenameProfile, ui_.renameProfileButton, this );
 
 	// drop hint label
 	ui_.jobView->viewport()->installEventFilter( this );
@@ -387,21 +387,22 @@ MainWindow::MainWindow( Config * const config, Converter * const converter ) :
 	dropHintLabel_->setAlignment( Qt::AlignCenter );
 	dropHintLabel_->setTextFormat( Qt::RichText );
 
-	// target
-	targetItemModel_ = new TargetItemModel( config_, this );
+	// profiles
+	profileItemModel_ = new ProfileItemModel( config_, this );
 
-	selfChangeCurrentTargetIndex_ = true;
-	ui_.targetComboBox->setModel( targetItemModel_ );
-	ui_.targetComboBox->setCurrentIndex( targetItemModel_->rowForTargetId( config_->currentDeviceTargetIndex() == -1 ?
-			TargetItemModel::TargetId_FileSystem : config_->deviceTargetIds().at( config_->currentDeviceTargetIndex() ) ) );
-	selfChangeCurrentTargetIndex_ = false;
+	selfChangeCurrentProfileIndex_ = true;
+	ui_.profileComboBox->setModel( profileItemModel_ );
+	ui_.profileComboBox->setCurrentIndex( profileItemModel_->rowForProfileId( config_->currentCustomProfileIndex() == -1 ?
+			ProfileItemModel::ProfileId_FileSystem : config_->customProfileIds().at( config_->currentCustomProfileIndex() ) ) );
+	selfChangeCurrentProfileIndex_ = false;
 
-	QCompleter * const targetPathCompleter = new QCompleter( ui_.targetPathLineEdit );
-	QDirModel * targetPathDirModel = new QDirModel( QStringList(), QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name, targetPathCompleter );
-	targetPathCompleter->setModel( targetPathDirModel );
-	ui_.targetPathLineEdit->setCompleter( targetPathCompleter );
+	QCompleter * const profilePathCompleter = new QCompleter( ui_.profilePathLineEdit );
+	QDirModel * const profilePathDirModel = new QDirModel( QStringList(), QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name,
+			profilePathCompleter );
+	profilePathCompleter->setModel( profilePathDirModel );
+	ui_.profilePathLineEdit->setCompleter( profilePathCompleter );
 
-	_updateCurrentTarget();
+	_updateCurrentProfile();
 
 	// jobs
 	jobItemModel_ = new JobItemModel( this );
@@ -454,31 +455,31 @@ void MainWindow::abort()
 }
 
 
-int MainWindow::currentTargetId() const
+int MainWindow::currentProfileId() const
 {
-	return targetItemModel_->targetIdForRow( ui_.targetComboBox->currentIndex() );
+	return profileItemModel_->profileIdForRow( ui_.profileComboBox->currentIndex() );
 }
 
 
-Config::Target MainWindow::currentTarget() const
+Config::Profile MainWindow::currentProfile() const
 {
-	const int currentTargetIndex = ui_.targetComboBox->currentIndex();
-	Q_ASSERT( currentTargetIndex != -1 );
+	const int currentProfileIndex = ui_.profileComboBox->currentIndex();
+	Q_ASSERT( currentProfileIndex != -1 );
 
-	const Config::Target target = targetItemModel_->targetForRow( currentTargetIndex );
-	Q_ASSERT( !target.isNull() );
+	const Config::Profile profile = profileItemModel_->profileForRow( currentProfileIndex );
+	Q_ASSERT( !profile.isNull() );
 
-	return target;
+	return profile;
 }
 
 
-void MainWindow::setCurrentTarget( const Config::Target & target )
+void MainWindow::setCurrentProfile( const Config::Profile & profile )
 {
-	const int currentTargetId = this->currentTargetId();
-	if ( TargetItemModel::isDeviceTarget( currentTargetId ) )
-		config_->setDeviceTargetForId( currentTargetId, target );
+	const int currentProfileId = this->currentProfileId();
+	if ( ProfileItemModel::isCustomProfile( currentProfileId ) )
+		config_->setCustomProfileForId( currentProfileId, profile );
 	else
-		config_->setFileSystemTarget( target );
+		config_->setFileSystemProfile( profile );
 }
 
 
@@ -602,20 +603,20 @@ void MainWindow::_updateFileFetcherActions()
 }
 
 
-void MainWindow::_updateCurrentTarget()
+void MainWindow::_updateCurrentProfile()
 {
-	const int currentTargetId = this->currentTargetId();
-	const bool isDeviceTarget = TargetItemModel::isDeviceTarget( currentTargetId );
-	config_->setCurrentDeviceTargetIndex( isDeviceTarget ?
-			config_->deviceTargetIndexForId( currentTargetId ) : -1 );
+	const int currentProfileId = this->currentProfileId();
+	const bool isCustomProfile = ProfileItemModel::isCustomProfile( currentProfileId );
+	config_->setCurrentCustomProfileIndex( isCustomProfile ?
+			config_->customProfileIndexForId( currentProfileId ) : -1 );
 
-	const Config::Target currentTarget = this->currentTarget();
-	ui_.targetPathLineEdit->setText( currentTarget.path );
-	ui_.targetQualityWidget->setValue( currentTarget.quality );
-	ui_.targetPrependYearToAlbumCheckBox->setChecked( currentTarget.prependYearToAlbum );
+	const Config::Profile currentProfile = this->currentProfile();
+	ui_.profilePathLineEdit->setText( currentProfile.path );
+	ui_.profileQualityWidget->setValue( currentProfile.quality );
+	ui_.profilePrependYearToAlbumCheckBox->setChecked( currentProfile.prependYearToAlbum );
 
-	ui_.actionRemoveTarget->setEnabled( isDeviceTarget );
-	ui_.actionRenameTarget->setEnabled( isDeviceTarget );
+	ui_.actionRemoveProfile->setEnabled( isCustomProfile );
+	ui_.actionRenameProfile->setEnabled( isCustomProfile );
 }
 
 
@@ -928,54 +929,54 @@ void MainWindow::_jobItemProgressChanged()
 }
 
 
-void MainWindow::on_targetComboBox_currentIndexChanged()
+void MainWindow::on_profileComboBox_currentIndexChanged()
 {
-	if ( selfChangeCurrentTargetIndex_ )
+	if ( selfChangeCurrentProfileIndex_ )
 		return;
 
-	_updateCurrentTarget();
+	_updateCurrentProfile();
 }
 
 
-void MainWindow::on_targetPathBrowseButton_clicked()
+void MainWindow::on_profilePathBrowseButton_clicked()
 {
-	Config::Target currentTarget = this->currentTarget();
+	Config::Profile currentProfile = this->currentProfile();
 
 	const QString path = QFileDialog::getExistingDirectory( this,
-			Global::makeWindowTitle( tr( "Select directory for device <b>%1</b>" ).arg( currentTarget.name ) ),
-			currentTarget.path );
+			Global::makeWindowTitle( tr( "Select directory for profile <b>%1</b>" ).arg( currentProfile.name ) ),
+			currentProfile.path );
 	if ( path.isNull() )
 		return;
 
-	currentTarget.path = path;
+	currentProfile.path = path;
 
-	setCurrentTarget( currentTarget );
+	setCurrentProfile( currentProfile );
 
-	ui_.targetPathLineEdit->setText( currentTarget.path );
+	ui_.profilePathLineEdit->setText( currentProfile.path );
 }
 
 
-void MainWindow::on_targetPathLineEdit_textChanged()
+void MainWindow::on_profilePathLineEdit_textChanged()
 {
-	Config::Target currentTarget = this->currentTarget();
-	currentTarget.path = ui_.targetPathLineEdit->text();
-	setCurrentTarget( currentTarget );
+	Config::Profile currentProfile = this->currentProfile();
+	currentProfile.path = ui_.profilePathLineEdit->text();
+	setCurrentProfile( currentProfile );
 }
 
 
-void MainWindow::on_targetPrependYearToAlbumCheckBox_toggled()
+void MainWindow::on_profilePrependYearToAlbumCheckBox_toggled()
 {
-	Config::Target currentTarget = this->currentTarget();
-	currentTarget.prependYearToAlbum = ui_.targetPrependYearToAlbumCheckBox->isChecked();
-	setCurrentTarget( currentTarget );
+	Config::Profile currentProfile = this->currentProfile();
+	currentProfile.prependYearToAlbum = ui_.profilePrependYearToAlbumCheckBox->isChecked();
+	setCurrentProfile( currentProfile );
 }
 
 
-void MainWindow::on_targetQualityWidget_valueChanged()
+void MainWindow::on_profileQualityWidget_valueChanged()
 {
-	Config::Target currentTarget = this->currentTarget();
-	currentTarget.quality = ui_.targetQualityWidget->value();
-	setCurrentTarget( currentTarget );
+	Config::Profile currentProfile = this->currentProfile();
+	currentProfile.quality = ui_.profileQualityWidget->value();
+	setCurrentProfile( currentProfile );
 }
 
 
@@ -1064,70 +1065,70 @@ void MainWindow::on_actionUnmark_triggered()
 }
 
 
-void MainWindow::on_actionAddTarget_triggered()
+void MainWindow::on_actionAddProfile_triggered()
 {
-	if ( !targetNameDialog_ )
-		targetNameDialog_ = new TargetNameDialog( this );
+	if ( !profileNameDialog_ )
+		profileNameDialog_ = new ProfileNameDialog( this );
 
-	targetNameDialog_->setName( QString() );
-	if ( targetNameDialog_->exec() != QDialog::Accepted )
+	profileNameDialog_->setName( QString() );
+	if ( profileNameDialog_->exec() != QDialog::Accepted )
 		return;
 
-	targetItemModel_->beginAddTarget();
+	profileItemModel_->beginAddProfile();
 
-	const int targetId = config_->addDeviceTarget();
-	Config::Target target = config_->deviceTargetForId( targetId );
-	target.name = targetNameDialog_->name();
-	config_->setDeviceTargetForId( targetId, target );
+	const int profileId = config_->addCustomProfile();
+	Config::Profile profile = config_->customProfileForId( profileId );
+	profile.name = profileNameDialog_->name();
+	config_->setCustomProfileForId( profileId, profile );
 
-	targetItemModel_->endAddTarget();
+	profileItemModel_->endAddProfile();
 
-	const int currentTargetIndex = targetItemModel_->rowForTargetId( targetId );
-	ui_.targetComboBox->setCurrentIndex( currentTargetIndex );
+	const int currentProfileIndex = profileItemModel_->rowForProfileId( profileId );
+	ui_.profileComboBox->setCurrentIndex( currentProfileIndex );
 }
 
 
-void MainWindow::on_actionRemoveTarget_triggered()
+void MainWindow::on_actionRemoveProfile_triggered()
 {
-	Config::Target currentTarget = this->currentTarget();
+	const Config::Profile currentProfile = this->currentProfile();
 
 	if ( QMessageBox::question( this,
-			Global::makeWindowTitle( tr( "Removing device" ) ),
-			tr( "Do you really want to remove device <b>%1</b>?" ).arg( currentTarget.name ),
+			Global::makeWindowTitle( tr( "Removing profile" ) ),
+			tr( "Do you really want to remove profile <b>%1</b>?" ).arg( currentProfile.name ),
 			QMessageBox::Yes | QMessageBox::No, QMessageBox::No ) != QMessageBox::Yes )
 		return;
 
-	targetItemModel_->beginRemoveTarget( currentTargetId() );
-	config_->removeDeviceTarget( currentTargetId() );
-	targetItemModel_->endRemoveTarget();
+	profileItemModel_->beginRemoveProfile( currentProfileId() );
+	config_->removeCustomProfile( currentProfileId() );
+	profileItemModel_->endRemoveProfile();
 }
 
 
-void MainWindow::on_actionRenameTarget_triggered()
+void MainWindow::on_actionRenameProfile_triggered()
 {
-	if ( !targetNameDialog_ )
-		targetNameDialog_ = new TargetNameDialog( this );
+	if ( !profileNameDialog_ )
+		profileNameDialog_ = new ProfileNameDialog( this );
 
-	Config::Target currentTarget = this->currentTarget();
+	Config::Profile currentProfile = this->currentProfile();
 
-	targetNameDialog_->setName( currentTarget.name );
-	if ( targetNameDialog_->exec() != QDialog::Accepted )
+	profileNameDialog_->setName( currentProfile.name );
+	if ( profileNameDialog_->exec() != QDialog::Accepted )
 		return;
 
-	targetItemModel_->beginChangeTarget( currentTargetId() );
+	profileItemModel_->beginChangeProfile( currentProfileId() );
 
-	currentTarget.name = targetNameDialog_->name();
-	config_->setDeviceTargetForId( currentTargetId(), currentTarget );
+	currentProfile.name = profileNameDialog_->name();
+	config_->setCustomProfileForId( currentProfileId(), currentProfile );
 
-	targetItemModel_->endChangeTarget();
+	profileItemModel_->endChangeProfile();
 }
 
 
 void MainWindow::on_actionStartConversion_triggered()
 {
-	const Config::Target currentTarget = this->currentTarget();
+	const Config::Profile currentProfile = this->currentProfile();
 
-	const QDir targetDir = QDir( currentTarget.path );
+	const QDir profileDir = QDir( currentProfile.path );
 
 	foreach ( const JobItemModel::FileItem * const fileItem, jobItemModel_->allInactiveFileItems() )
 	{
@@ -1138,8 +1139,8 @@ void MainWindow::on_actionStartConversion_triggered()
 		}
 
 		const int jobId = converter_->addJob( fileItem->sourcePath, fileItem->format,
-				targetDir.absoluteFilePath( fileItem->relativeDestinationPath ),
-				currentTarget.quality, currentTarget.prependYearToAlbum );
+				profileDir.absoluteFilePath( fileItem->relativeDestinationPath ),
+				currentProfile.quality, currentProfile.prependYearToAlbum );
 
 		const QModelIndex index = jobItemModel_->indexForItem( fileItem );
 		jobItemModel_->setFileItemJobIdForIndex( index, jobId );

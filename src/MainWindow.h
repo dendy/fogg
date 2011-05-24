@@ -35,7 +35,7 @@ class Config;
 class Converter;
 class FileFetcher;
 class FileFetcherDialog;
-class TargetNameDialog;
+class ProfileNameDialog;
 class DonationDialog;
 class AboutDialog;
 class PreferencesDialog;
@@ -46,34 +46,34 @@ class JobItemModel;
 
 
 
-class TargetItemModel : public QAbstractItemModel
+class ProfileItemModel : public QAbstractItemModel
 {
 	Q_OBJECT
 
 public:
-	enum TargetId
+	enum ProfileId
 	{
-		TargetId_Null = 0,
-		TargetId_FileSystem = -1
+		ProfileId_Null = 0,
+		ProfileId_FileSystem = -1
 	};
 
-	static bool isDeviceTarget( int targetId );
+	static bool isCustomProfile( int profileId );
 
-	TargetItemModel( Config * config, QObject * parent = 0 );
-	~TargetItemModel();
+	ProfileItemModel( Config * config, QObject * parent = 0 );
+	~ProfileItemModel();
 
-	int targetIdForRow( int row ) const;
-	Config::Target targetForRow( int row ) const;
-	int rowForTargetId( int targetId ) const;
+	int profileIdForRow( int row ) const;
+	Config::Profile profileForRow( int row ) const;
+	int rowForProfileId( int profileId ) const;
 
-	void beginAddTarget();
-	void endAddTarget();
+	void beginAddProfile();
+	void endAddProfile();
 
-	void beginChangeTarget( int targetId );
-	void endChangeTarget();
+	void beginChangeProfile( int profileId );
+	void endChangeProfile();
 
-	void beginRemoveTarget( int targetId );
-	void endRemoveTarget();
+	void beginRemoveProfile( int profileId );
+	void endRemoveProfile();
 
 	// reimplemented from QAbstractItemModel
 	int rowCount( const QModelIndex & parent ) const;
@@ -85,12 +85,13 @@ public:
 
 private:
 	int _rowCount() const;
-	int _rowForDeviceTargetIndex( int deviceTargetIndex ) const;
+	int _rowForCustomProfileIndex( int customProfileIndex ) const;
 
 private:
 	Config * config_;
 
-	int targetIdBeingChanged_;
+	// helpers
+	int profileIdBeingChanged_;
 
 	friend class MainWindow;
 };
@@ -108,10 +109,10 @@ public:
 
 	void abort();
 
-	int currentTargetId() const;
+	int currentProfileId() const;
 
-	Config::Target currentTarget() const;
-	void setCurrentTarget( const Config::Target & target );
+	Config::Profile currentProfile() const;
+	void setCurrentProfile( const Config::Profile & profile );
 
 protected:
 	// reimplemented from QWidget
@@ -144,7 +145,7 @@ private:
 	void _updateJobActions();
 	void _adjustDropHintLabel();
 	void _updateFileFetcherActions();
-	void _updateCurrentTarget();
+	void _updateCurrentProfile();
 	void _setJobItemModelSourcePaths();
 	void _startFileFetch( const QList<QUrl> & urls );
 	void _finishFileFetch();
@@ -172,11 +173,11 @@ private slots:
 	void _jobFileItemAboutToRemove();
 	void _jobItemProgressChanged();
 
-	void on_targetComboBox_currentIndexChanged();
-	void on_targetPathBrowseButton_clicked();
-	void on_targetPathLineEdit_textChanged();
-	void on_targetPrependYearToAlbumCheckBox_toggled();
-	void on_targetQualityWidget_valueChanged();
+	void on_profileComboBox_currentIndexChanged();
+	void on_profilePathBrowseButton_clicked();
+	void on_profilePathLineEdit_textChanged();
+	void on_profilePrependYearToAlbumCheckBox_toggled();
+	void on_profileQualityWidget_valueChanged();
 
 	// actions
 	void on_actionAddFiles_triggered();
@@ -185,9 +186,9 @@ private slots:
 	void on_actionRemoveAll_triggered();
 	void on_actionUnmark_triggered();
 
-	void on_actionAddTarget_triggered();
-	void on_actionRemoveTarget_triggered();
-	void on_actionRenameTarget_triggered();
+	void on_actionAddProfile_triggered();
+	void on_actionRemoveProfile_triggered();
+	void on_actionRenameProfile_triggered();
 
 	void on_actionStartConversion_triggered();
 	void on_actionStopConversion_triggered();
@@ -211,8 +212,8 @@ private:
 	QString translationsDirPath_;
 	QPointer<Grim::Tools::LocalizationManager> localizationManager_;
 
-	// target combo box
-	QPointer<TargetItemModel> targetItemModel_;
+	// profile combo box
+	QPointer<ProfileItemModel> profileItemModel_;
 
 	// job view
 	QPointer<JobItemModel> jobItemModel_;
@@ -223,7 +224,7 @@ private:
 	QPointer<QTimer> fileFetcherDialogAppearTimer_;
 
 	// dialogs
-	QPointer<TargetNameDialog> targetNameDialog_;
+	QPointer<ProfileNameDialog> profileNameDialog_;
 	QPointer<DonationDialog> donationDialog_;
 	QPointer<AboutDialog> aboutDialog_;
 	QPointer<PreferencesDialog> preferencesDialog_;
@@ -239,7 +240,7 @@ private:
 	QStringList failedFetchedFilePaths_;
 	QList<FetchedFileInfo> nonRecognizedFetchedFileInfos_;
 
-	bool selfChangeCurrentTargetIndex_;
+	bool selfChangeCurrentProfileIndex_;
 };
 
 

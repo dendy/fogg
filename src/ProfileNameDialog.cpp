@@ -1,5 +1,5 @@
 
-#include "TargetNameDialog.h"
+#include "ProfileNameDialog.h"
 
 #include <QPushButton>
 
@@ -13,7 +13,7 @@ namespace Fogg {
 
 
 
-TargetNameDialog::TargetNameDialog( QWidget * const parent ) :
+ProfileNameDialog::ProfileNameDialog( QWidget * const parent ) :
 	QDialog( parent )
 {
 	ui_.setupUi( this );
@@ -25,19 +25,19 @@ TargetNameDialog::TargetNameDialog( QWidget * const parent ) :
 }
 
 
-QString TargetNameDialog::name() const
+QString ProfileNameDialog::name() const
 {
 	return ui_.nameLineEdit->text();
 }
 
 
-void TargetNameDialog::setName( const QString & name )
+void ProfileNameDialog::setName( const QString & name )
 {
 	ui_.nameLineEdit->setText( name );
 }
 
 
-void TargetNameDialog::showEvent( QShowEvent * const e )
+void ProfileNameDialog::showEvent( QShowEvent * const e )
 {
 	QDialog::showEvent( e );
 
@@ -46,7 +46,7 @@ void TargetNameDialog::showEvent( QShowEvent * const e )
 }
 
 
-void TargetNameDialog::changeEvent( QEvent * const e )
+void ProfileNameDialog::changeEvent( QEvent * const e )
 {
 	switch ( e->type() )
 	{
@@ -60,7 +60,7 @@ void TargetNameDialog::changeEvent( QEvent * const e )
 }
 
 
-void TargetNameDialog::on_nameLineEdit_textChanged()
+void ProfileNameDialog::on_nameLineEdit_textChanged()
 {
 	QAbstractButton * const okButton = ui_.buttonBox->button( QDialogButtonBox::Ok );
 	Q_ASSERT( okButton );
@@ -68,9 +68,9 @@ void TargetNameDialog::on_nameLineEdit_textChanged()
 }
 
 
-void TargetNameDialog::_retranslateUi()
+void ProfileNameDialog::_retranslateUi()
 {
-	setWindowTitle( Global::makeWindowTitle( tr( "Rename device" ) ) );
+	setWindowTitle( Global::makeWindowTitle( tr( "Rename profile" ) ) );
 }
 
 
