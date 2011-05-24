@@ -88,6 +88,16 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
+        <widget class="QLabel" name="musicDescriptionstaticLabel">
+         <property name="text">
+          <string>List of your music sources. All converted output files will be automatically orginized with the similar hierarchy as input files under directories below.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QTreeView" name="sourcePathView">
          <property name="rootIsDecorated">
           <bool>false</bool>
