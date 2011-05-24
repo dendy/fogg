@@ -69,6 +69,8 @@ void ButtonActionBinder::_updateButton()
 	button_->setEnabled( action_->isEnabled() );
 	button_->setIcon( action_->icon() );
 	button_->setVisible( action_->isVisible() );
+	button_->setToolTip( action_->toolTip() );
+	button_->setWhatsThis( action_->whatsThis() );
 }
 
 
