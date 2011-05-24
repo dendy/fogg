@@ -342,7 +342,7 @@
     <string>E&amp;xpand all</string>
    </property>
    <property name="toolTip">
-    <string>Expand all folders in Converter view.</string>
+    <string>Expand all folders in Converter file view.</string>
    </property>
   </action>
   <action name="actionCollapseAll">
@@ -350,7 +350,7 @@
     <string>&amp;Collapse all</string>
    </property>
    <property name="toolTip">
-    <string>Collapse all folders in Converter view.</string>
+    <string>Collapse all folders in Converter file view.</string>
    </property>
   </action>
   <action name="actionStartConversion">
@@ -373,7 +373,7 @@
     <string>&amp;Unmark</string>
    </property>
    <property name="toolTip">
-    <string>Mark all files as unfinished</string>
+    <string>Mark all files to repeat conversion.</string>
    </property>
   </action>
   <action name="actionRemoveAll">
@@ -381,7 +381,7 @@
     <string>Remove all</string>
    </property>
    <property name="toolTip">
-    <string>Remove all files scheduled for conversion.</string>
+    <string>Clear file list.</string>
    </property>
   </action>
   <action name="actionStopConversion">

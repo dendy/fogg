@@ -60,10 +60,6 @@ Cheers.</source>
         <source>Built with audio plugin: %1</source>
         <translation>Собрано с аудио-плагином: %1</translation>
     </message>
-    <message>
-        <source>Built with plugin: %1</source>
-        <translation type="obsolete">Собрано с плагином: %1</translation>
-    </message>
 </context>
 <context>
     <name>Fogg::DonationDialog</name>
@@ -94,10 +90,6 @@ Cheers.</source>
 </context>
 <context>
     <name>Fogg::JobItemModel</name>
-    <message>
-        <source>Filename</source>
-        <translation>Файл</translation>
-    </message>
     <message>
         <source>Progress</source>
         <translation>Прогресс</translation>
@@ -150,6 +142,10 @@ Cheers.</source>
         <source>Auto</source>
         <translation>Авто</translation>
     </message>
+    <message>
+        <source>File</source>
+        <translation>Файл</translation>
+    </message>
 </context>
 <context>
     <name>Fogg::MainWindow</name>
@@ -170,26 +166,6 @@ Cheers.</source>
         <translation>Все файлы</translation>
     </message>
     <message>
-        <source>Select directory for device &lt;b&gt;%1&lt;/b&gt;</source>
-        <translation>Выберите директорию для устройства &lt;b&gt;%1&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <source>Removing device</source>
-        <translation>Удаление устройства</translation>
-    </message>
-    <message>
-        <source>Do you really want to remove device &lt;b&gt;%1&lt;/b&gt;?</source>
-        <translation>Вы действительно желаете удалить устройство &lt;b&gt;%1&lt;/b&gt;?</translation>
-    </message>
-    <message>
-        <source>Select audio files</source>
-        <translation type="obsolete">Выберите медиа-файлы</translation>
-    </message>
-    <message>
-        <source>Select directory with audio files</source>
-        <translation type="obsolete">Выберите директорию с медиа-файлами</translation>
-    </message>
-    <message>
         <source>Quit confirmation</source>
         <translation>Подтверждение выхода</translation>
     </message>
@@ -208,6 +184,18 @@ Cheers.</source>
     <message>
         <source>Select directory with media files</source>
         <translation>Выберите директорию с медиа-файлами</translation>
+    </message>
+    <message>
+        <source>Select directory for profile &lt;b&gt;%1&lt;/b&gt;</source>
+        <translation>Выберите директрию для профиля &lt;b&gt;%1&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>Removing profile</source>
+        <translation>Удаление профиля</translation>
+    </message>
+    <message>
+        <source>Do you really want to remove profile &lt;b&gt;%1&lt;/b&gt;?</source>
+        <translation>Вы действительно желаете удалить профиль &lt;b&gt;%1&lt;/b&gt;?</translation>
     </message>
 </context>
 <context>
@@ -234,6 +222,20 @@ Cheers.</source>
     </message>
 </context>
 <context>
+    <name>Fogg::ProfileItemModel</name>
+    <message>
+        <source>File System</source>
+        <translation>Файловая система</translation>
+    </message>
+</context>
+<context>
+    <name>Fogg::ProfileNameDialog</name>
+    <message>
+        <source>Rename profile</source>
+        <translation>Переименование профиля</translation>
+    </message>
+</context>
+<context>
     <name>Fogg::SourcePathItemModel</name>
     <message>
         <source>Path</source>
@@ -241,29 +243,7 @@ Cheers.</source>
     </message>
 </context>
 <context>
-    <name>Fogg::TargetItemModel</name>
-    <message>
-        <source>File System</source>
-        <translation>Файловая система</translation>
-    </message>
-</context>
-<context>
-    <name>Fogg::TargetNameDialog</name>
-    <message>
-        <source>Rename device</source>
-        <translation>Переименование устройства</translation>
-    </message>
-</context>
-<context>
     <name>MainWindow</name>
-    <message>
-        <source>Target</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Target:</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Prepend year to album</source>
         <translation>Добавть год к альбому</translation>
@@ -278,71 +258,31 @@ Cheers.</source>
     </message>
     <message>
         <source>Converter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>File</source>
-        <translation type="obsolete">Файл</translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation type="obsolete">Настройки</translation>
-    </message>
-    <message>
-        <source>Help</source>
-        <translation type="obsolete">Помощь</translation>
-    </message>
-    <message>
-        <source>Preferences...</source>
-        <translation type="obsolete">Опции ...</translation>
+        <translation>Конвертер</translation>
     </message>
     <message>
         <source>Add media files to convert.</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить медиа-файлы для конвертации.</translation>
     </message>
     <message>
         <source>Add directory with media files to convert.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>About</source>
-        <translation type="obsolete">О программе</translation>
-    </message>
-    <message>
-        <source>Donate</source>
-        <translation type="obsolete">Пожертвования</translation>
+        <translation>Добавить директорию с медиа-файлами для конвертации.</translation>
     </message>
     <message>
         <source>Remove Selected</source>
         <translation>Удалить выбранные</translation>
     </message>
     <message>
-        <source>Expand all folders in Converter view.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Collapse all folders in Converter view.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Start conversion.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Mark all files as unfinished</source>
-        <translation type="unfinished"></translation>
+        <translation>Начать конвертацию.</translation>
     </message>
     <message>
         <source>Remove all</source>
         <translation>Удалить все</translation>
     </message>
     <message>
-        <source>Remove all files scheduled for conversion.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Stop conversion.</source>
-        <translation type="unfinished"></translation>
+        <translation>Остановить конвертацию.</translation>
     </message>
     <message>
         <source>Encoding quality:</source>
@@ -365,10 +305,6 @@ Cheers.</source>
         <translation>&amp;Вид</translation>
     </message>
     <message>
-        <source>&amp;Device</source>
-        <translation type="obsolete">&amp;Устройства</translation>
-    </message>
-    <message>
         <source>&amp;Quit</source>
         <translation>&amp;Выход</translation>
     </message>
@@ -382,7 +318,7 @@ Cheers.</source>
     </message>
     <message>
         <source>Open application preferences.</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть диалог опций.</translation>
     </message>
     <message>
         <source>Add &amp;Files...</source>
@@ -402,7 +338,7 @@ Cheers.</source>
     </message>
     <message>
         <source>Make donation.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сделать пожертвование.</translation>
     </message>
     <message>
         <source>Stay on &amp;top</source>
@@ -429,36 +365,64 @@ Cheers.</source>
         <translation>Ос&amp;тановить</translation>
     </message>
     <message>
-        <source>&amp;Add Device...</source>
-        <translation>До&amp;бавить устройство...</translation>
-    </message>
-    <message>
-        <source>Add new device.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Remove Device...</source>
-        <translation>&amp;Удалить устройство...</translation>
-    </message>
-    <message>
-        <source>Remove current device.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Re&amp;name Device...</source>
-        <translation>Переи&amp;меновать устройство...</translation>
-    </message>
-    <message>
-        <source>Rename current device.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Ctrl+S</source>
         <translation></translation>
     </message>
     <message>
-        <source>&amp;Devices</source>
-        <translation>&amp;Устройства</translation>
+        <source>Profile</source>
+        <translation>Профиль</translation>
+    </message>
+    <message>
+        <source>Name:</source>
+        <translation>Имя:</translation>
+    </message>
+    <message>
+        <source>&amp;Profiles</source>
+        <translation>&amp;Профили</translation>
+    </message>
+    <message>
+        <source>&amp;Add Profile...</source>
+        <translation>&amp;Добавить профиль...</translation>
+    </message>
+    <message>
+        <source>Create new profile.</source>
+        <translation>Создать новый профиль.</translation>
+    </message>
+    <message>
+        <source>&amp;Remove Profile...</source>
+        <translation>&amp;Удалить профиль...</translation>
+    </message>
+    <message>
+        <source>Remove current profile.</source>
+        <translation>Удалить текущий профиль.</translation>
+    </message>
+    <message>
+        <source>Re&amp;name Profile...</source>
+        <translation>&amp;Переименовать профиль...</translation>
+    </message>
+    <message>
+        <source>Rename current profile.</source>
+        <translation>Переименовать текущий профиль.</translation>
+    </message>
+    <message>
+        <source>Mark all files to repeat conversion.</source>
+        <translation>Отметить все файлы для повторной конвертации.</translation>
+    </message>
+    <message>
+        <source>Expand all folders in Converter file view.</source>
+        <translation>Развернуть все директории в списке файлов для конвертации.</translation>
+    </message>
+    <message>
+        <source>Collapse all folders in Converter file view.</source>
+        <translation>Свернуть все директории в списке файлов для конвертации.</translation>
+    </message>
+    <message>
+        <source>Clear file list.</source>
+        <translation>Очистить список файлов.</translation>
+    </message>
+    <message>
+        <source>Mark all files for repeat conversion.</source>
+        <translation type="obsolete">Отметить все файлы для повторной конвертации.</translation>
     </message>
 </context>
 <context>
@@ -491,12 +455,19 @@ Cheers.</source>
         <translation>Язык:</translation>
     </message>
     <message>
-        <source>Default encoding quality:</source>
-        <translation type="obsolete">Качество кодирования по-умолчанию:</translation>
-    </message>
-    <message>
         <source>Encoding quality:</source>
         <translation>Качество кодирования:</translation>
+    </message>
+    <message>
+        <source>List of your music sources. All converted output files will be automatically orginized with the similar hierarchy as input files under directories below.</source>
+        <translation>Список директорий с музыкой. Все сконвертированные файлы будут автоматически организованы в такую же иерархию, как и исходные файлы из перечисленных директирий.</translation>
+    </message>
+</context>
+<context>
+    <name>ProfileNameDialog</name>
+    <message>
+        <source>Enter profile name:</source>
+        <translation>Введите имя профиля:</translation>
     </message>
 </context>
 <context>
@@ -508,13 +479,6 @@ Please finish current conversion, clear the list and add missing files again man
         <translation>Некоторые файлы были пропущены при сканировании, поскольку они конфликтуют с уже добавленными в список.
 
 Пожалуйста, завершите текущее конвертирование, очистите список и добавьте пропущенные файлы заново.</translation>
-    </message>
-</context>
-<context>
-    <name>TargetNameDialog</name>
-    <message>
-        <source>Please enter device name:</source>
-        <translation>Пожалуйста, введите название устройства:</translation>
     </message>
 </context>
 </TS>

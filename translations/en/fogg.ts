@@ -89,10 +89,6 @@ Cheers.</source>
 <context>
     <name>Fogg::JobItemModel</name>
     <message>
-        <source>Filename</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Progress</source>
         <translation type="unfinished"></translation>
     </message>
@@ -144,6 +140,10 @@ Cheers.</source>
         <source>Auto</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>File</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Fogg::MainWindow</name>
@@ -164,18 +164,6 @@ Cheers.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select directory for device &lt;b&gt;%1&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Removing device</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Do you really want to remove device &lt;b&gt;%1&lt;/b&gt;?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Quit confirmation</source>
         <translation type="unfinished"></translation>
     </message>
@@ -193,6 +181,18 @@ Cheers.</source>
     </message>
     <message>
         <source>Select directory with media files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select directory for profile &lt;b&gt;%1&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Removing profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Do you really want to remove profile &lt;b&gt;%1&lt;/b&gt;?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -220,6 +220,20 @@ Cheers.</source>
     </message>
 </context>
 <context>
+    <name>Fogg::ProfileItemModel</name>
+    <message>
+        <source>File System</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Fogg::ProfileNameDialog</name>
+    <message>
+        <source>Rename profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Fogg::SourcePathItemModel</name>
     <message>
         <source>Path</source>
@@ -227,29 +241,7 @@ Cheers.</source>
     </message>
 </context>
 <context>
-    <name>Fogg::TargetItemModel</name>
-    <message>
-        <source>File System</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>Fogg::TargetNameDialog</name>
-    <message>
-        <source>Rename device</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>MainWindow</name>
-    <message>
-        <source>Target</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Target:</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Prepend year to album</source>
         <translation type="unfinished"></translation>
@@ -279,27 +271,11 @@ Cheers.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Expand all folders in Converter view.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Collapse all folders in Converter view.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Start conversion.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Mark all files as unfinished</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Remove all</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remove all files scheduled for conversion.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -387,35 +363,59 @@ Cheers.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Add Device...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add new device.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Remove Device...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remove current device.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Re&amp;name Device...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rename current device.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Ctrl+S</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Devices</source>
+        <source>Profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Profiles</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Add Profile...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create new profile.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Remove Profile...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove current profile.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Re&amp;name Profile...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rename current profile.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Expand all folders in Converter file view.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Collapse all folders in Converter file view.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear file list.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mark all files to repeat conversion.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -452,6 +452,17 @@ Cheers.</source>
         <source>Encoding quality:</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>List of your music sources. All converted output files will be automatically orginized with the similar hierarchy as input files under directories below.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ProfileNameDialog</name>
+    <message>
+        <source>Enter profile name:</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SkippedFilesDialog</name>
@@ -459,13 +470,6 @@ Cheers.</source>
         <source>Some files have been skipped to be added because they are conflicting with other files already populated in the list from different sources.
 
 Please finish current conversion, clear the list and add missing files again manually.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>TargetNameDialog</name>
-    <message>
-        <source>Please enter device name:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
