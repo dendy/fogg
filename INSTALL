@@ -1,0 +1,110 @@
+
+Here can be found solution how to build Fogg manually.
+
+
+=======================
+0. Table of Contents
+-----------------------
+
+1. Prerequisites
+2. Configuration
+3. Building
+4. Installing
+5. Running
+
+
+=======================
+1. Prerequisites
+-----------------------
+
+Mandatory:
+  CMake >= 2.8.4  - Build system. http://cmake.org
+  Qt >= 4.7       - Nokia crossplatform C++ library. http://qt.nokia.com
+  Ogg/Vorbis      - Bitstream and audio codec from Xiph.org. http://xiph.org
+
+Optional:
+  FLAC            - Free Loseless Audio Codec. Enables convertion from FLAC audio files.
+  mpg123          - Free MP3 codec library. Enabled conversion from Mp3 audio files.
+
+
+=======================
+2. Configuration
+-----------------------
+
+a) Unpack/clone Fogg sources:
+
+  $ tar -zxf fogg-<version>.tar.gz
+
+  or
+
+  $ clone git://gitorious.org/fogg/fogg.git
+
+b) Create build directory:
+
+  $ mkdir /path/to/fogg/build/dir && cd /path/to/fogg/build/dir
+
+c) Configure Fogg:
+
+  $ cmake /path/to/fogg/cmake
+
+Fogg accepts next configuration options.
+Use either ccmake or cmake-gui commands instead of cmake to specify them interactively.
+Or path them sequentially from command line in format: "cmake -D <option>=<value> ..."
+
+  CMAKE_BUILD_TYPE             - Standard CMake variable to define build type. Possible values are:
+                                   Release (default)
+                                   Debug
+
+  Fogg_BUILD_FLAC_PLUGIN       - Whether to build partucular plugin that enables conversion from appropriate format.
+  Fogg_BUILD_VORBIS_PLUGIN       Possible values are:
+  Fogg_BUILD_WAVE_PLUGIN           Optional (default) - if all prerequisites are satisfied than plugin will be built,
+                                                        otherwise it will be skipped with information message
+  Fogg_BUILD_MP3_PLUGIN            Yes                - force to build plugin, throw error if prerequisites are not satisfied
+                                   No                 - force to not build plugin
+
+  Fogg_DEBUG                   - Print Fogg specific debug messages. Possible values are:
+                                   YES
+                                   NO (default)
+
+  Fogg_USE_PRECOMPILED_HEADERS - Enable precompiled headers. Possible values are:
+                                   YES (default)
+                                   NO
+
+  Fogg_TRANSLATION_LOCALES     - Space separated list of locales to build translation for. Each translation is represented by
+                                 directory under the "translations" folder. Possible values are:
+                                   ALL (default)       - build all translations found
+                                   <translation names> - list of translations to build, for example: "en ru de"; this version is
+                                                         useful for localizators to generate new, not exist yet translation.
+
+
+=======================
+3. Building
+-----------------------
+
+While inside build directory, run:
+
+  $ make
+
+Use -j argument to speedup building in several threads:
+
+  $ make -j <thread count>
+
+
+=======================
+4. Installing
+-----------------------
+
+To be done.
+
+
+=======================
+5. Running
+-----------------------
+
+By default Fogg executable is placed into build directory. After successful build run:
+
+  $ ./Fogg
+
+To let Fogg find built translation by running it from build directory - specify FOGG_TRANSLATIONS_DIR env variable:
+
+  $ FOGG_TRANSLATIONS_DIR=$PWD/translations ./Fogg
