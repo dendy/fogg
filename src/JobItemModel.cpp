@@ -226,7 +226,7 @@ QString JobItemModel::_nameForColumn( const ColumnType column )
 	switch ( column )
 	{
 	case Column_Name:
-		return tr( "Filename" );
+		return tr( "File" );
 	case Column_Progress:
 		return tr( "Progress" );
 	case Column_State:
