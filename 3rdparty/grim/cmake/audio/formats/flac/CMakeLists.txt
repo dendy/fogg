@@ -62,5 +62,5 @@ endif()
 
 # properties
 set_property( TARGET GrimAudioFormatPluginFlac PROPERTY
-	LINK_INTERFACE_LIBRARIES ${FLAC_LIBRARY}
+	LINK_INTERFACE_LIBRARIES ${Flac_LIBRARY}
 )
