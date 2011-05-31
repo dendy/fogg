@@ -64,5 +64,5 @@ endif()
 
 # properties
 set_property( TARGET GrimAudioFormatPluginVorbis PROPERTY
-	LINK_INTERFACE_LIBRARIES ${Ogg_LIBRARY} ${Vorbis_LIBRARY} ${VorbisFile_LIBRARY}
+	LINK_INTERFACE_LIBRARIES ${Vorbis_LIBRARY} ${VorbisFile_LIBRARY} ${Ogg_LIBRARY}
 )

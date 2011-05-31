@@ -199,7 +199,7 @@ add_executable( Fogg ${Fogg_UI_HEADERS} ${Fogg_ALL_SOURCES} )
 
 
 # link
-target_link_libraries( Fogg ${Grim_LIBRARIES} ${QT_LIBRARIES} ${Ogg_LIBRARIES} ${Vorbis_LIBRARIES} )
+target_link_libraries( Fogg ${Grim_LIBRARIES} ${QT_LIBRARIES} ${Vorbis_LIBRARIES} ${Ogg_LIBRARIES} )
 
 
 # precompiled
