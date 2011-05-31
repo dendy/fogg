@@ -2,6 +2,7 @@
 #include "FormatManager.h"
 
 #include <QPluginLoader>
+#include <QFileInfo>
 
 #include "FormatPlugin.h"
 

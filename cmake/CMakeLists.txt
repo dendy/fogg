@@ -61,9 +61,7 @@ macro( fogg_setup_audio_format_plugin PLUGIN )
 	mark_as_advanced( FORCE GrimAudio_BUILD_PLUGIN_${_plugin_upper} GrimAudio_BUILD_PLUGIN_${_plugin_upper}_OPTIONAL )
 endmacro()
 
-if ( Fogg_USE_PRECOMPILED_HEADERS )
-	set( Grim_USE_PRECOMPILED_HEADERS YES CACHE BOOL "" FORCE )
-endif()
+set( Grim_USE_PRECOMPILED_HEADERS ${Fogg_USE_PRECOMPILED_HEADERS} CACHE BOOL "" FORCE )
 
 if ( Fogg_DEBUG )
 	set( GrimAudio_DEBUG YES CACHE BOOL "" FORCE )
