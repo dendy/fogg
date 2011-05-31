@@ -13,7 +13,4 @@
 #include <vorbis/vorbisenc.h>
 #include <vorbis/vorbisfile.h>
 
-// FLAC
-#include <FLAC/all.h>
-
 #endif
