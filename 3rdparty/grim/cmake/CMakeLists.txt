@@ -102,10 +102,6 @@ foreach ( _grim_module ${_grim_modules} )
 	if ( Grim_BUILD_MODULE_${_grim_module_upper} )
 		add_subdirectory( "${_grim_module_lower}" )
 
-		set( _library_variable Grim${_grim_module}_LIBRARY )
-		list( APPEND _grim_libraries ${${_library_variable}} )
-		mark_as_advanced( FORCE ${_library_variable} )
-
 		set( _grim_target Grim${_grim_module} )
 		list( APPEND _grim_targets ${_grim_target} )
 
@@ -113,6 +109,10 @@ foreach ( _grim_module ${_grim_modules} )
 		if ( _interface_libraries )
 			list( APPEND _grim_libraries ${_interface_libraries} )
 		endif()
+
+		set( _library_variable Grim${_grim_module}_LIBRARY )
+		list( APPEND _grim_libraries ${${_library_variable}} )
+		mark_as_advanced( FORCE ${_library_variable} )
 	endif()
 endforeach()
 
