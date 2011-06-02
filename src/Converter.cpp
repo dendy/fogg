@@ -226,6 +226,50 @@ void Job::run()
 	}
 }
 
+template<int channelCount, int bytesPerSample>
+static void _processSamples( const char * const rawData, float ** const vorbisData, const qint64 sampleCount )
+{
+	// Vorbis sample is a float value in range [-0.5 .. +0.5].
+	// This multiplier is for the 32 bit per sample source.
+	static const float kBppMultiplier = 2147483648.f;
+
+	const int channelSampleSize = channelCount * bytesPerSample;
+	for ( int sampleIndex = 0; sampleIndex < sampleCount; ++sampleIndex )
+	{
+		for ( int channelIndex = 0; channelIndex < channelCount; ++channelIndex )
+		{
+			const int sampleOffset = sampleIndex*channelSampleSize + channelIndex*bytesPerSample;
+
+			int value;
+
+			switch ( bytesPerSample )
+			{
+			case 1:
+				value = *reinterpret_cast<const qint8*>( rawData + sampleOffset );
+				break;
+			case 2:
+				value = *reinterpret_cast<const qint16*>( rawData + sampleOffset );
+				break;
+			case 3:
+				value = 0;
+				for ( int i = 0; i < 3; ++i )
+					reinterpret_cast<char*>( &value )[ i ] = rawData[ sampleOffset + i ];
+				if ( value & (1 << 23) )
+					value |= 0xff000000;
+				break;
+			case 4:
+				value = *reinterpret_cast<const qint32*>( rawData + sampleOffset );
+				break;
+			default:
+				Q_ASSERT( false );
+			}
+
+			const float multiplier = kBppMultiplier / (1 << (4 - bytesPerSample)*8);
+			vorbisData[ channelIndex ][ sampleIndex ] = float(value) / multiplier;
+		}
+	}
+}
+
 
 Converter::JobResultType Job::_runBody()
 {
@@ -268,6 +312,20 @@ Converter::JobResultType Job::_runBody()
 	if ( channelCount != 1 && channelCount != 2 )
 	{
 		// only mono and stereo audio streams supported at this moment
+		return Converter::JobResult_NotSupported;
+	}
+
+	const int bitsPerSample = sourceAudioFile_->bitsPerSample();
+	switch ( bitsPerSample )
+	{
+	case 8:
+	case 16:
+	case 24:
+	case 32:
+		// supported
+		break;
+	default:
+		// unsupported
 		return Converter::JobResult_NotSupported;
 	}
 
@@ -340,14 +398,19 @@ Converter::JobResultType Job::_runBody()
 		}
 	}
 
+	static const int kSampleCount = 1024*64;
+
+	const int channelSampleSize = sourceAudioFile_->samplesToBytes( 1 );
+
+	QByteArray sourceBuffer;
+	sourceBuffer.resize( sourceAudioFile_->samplesToBytes( kSampleCount ) );
+	const char * const sourceBufferData = sourceBuffer.constData();
+
 	if ( !writeError )
 	{
 		while ( !eos )
 		{
-			static const int kBufferSize = 1024*128;
-			char buf[ kBufferSize ];
-
-			const qint64 bytes = sourceAudioFile_->device()->read( buf, sizeof(buf) );
+			const qint64 bytes = sourceAudioFile_->device()->read( sourceBuffer.data(), sourceBuffer.size() );
 
 			if ( bytes == -1 )
 			{
@@ -361,25 +424,33 @@ Converter::JobResultType Job::_runBody()
 			}
 			else
 			{
-				// each Vorbis sample is 2 byte float value
-				const int sampleCount = bytes/(2*channelCount);
+				const int sampleCount = sourceAudioFile_->bytesToSamples( bytes );
 
 				// uninterleave samples
-				float ** const buffer = vorbis_analysis_buffer( &vd, sampleCount );
+				float ** const vorbisData = vorbis_analysis_buffer( &vd, sampleCount );
 
-				if ( channelCount == 2 )
+				if ( channelCount == 1 )
 				{
-					for ( int i = 0; i < sampleCount; i++ )
+					switch ( bitsPerSample )
 					{
-						buffer[ 0 ][ i ] = ((buf[i*4+1]<<8)|(0x00ff&(int)buf[i*4+0]))/32768.f;
-						buffer[ 1 ][ i ] = ((buf[i*4+3]<<8)|(0x00ff&(int)buf[i*4+2]))/32768.f;
+					case  8: _processSamples<1,1>( sourceBufferData, vorbisData, sampleCount ); break;
+					case 16: _processSamples<1,2>( sourceBufferData, vorbisData, sampleCount ); break;
+					case 24: _processSamples<1,3>( sourceBufferData, vorbisData, sampleCount ); break;
+					case 32: _processSamples<1,4>( sourceBufferData, vorbisData, sampleCount ); break;
+					default:
+						Q_ASSERT( false );
 					}
 				}
 				else
 				{
-					for ( int i = 0; i < sampleCount; i++ )
+					switch ( bitsPerSample )
 					{
-						buffer[ 0 ][ i ] = ((buf[i*2+1]<<8)|(0x00ff&(int)buf[i*2]))/32768.f;
+					case  8: _processSamples<2,1>( sourceBufferData, vorbisData, sampleCount ); break;
+					case 16: _processSamples<2,2>( sourceBufferData, vorbisData, sampleCount ); break;
+					case 24: _processSamples<2,3>( sourceBufferData, vorbisData, sampleCount ); break;
+					case 32: _processSamples<2,4>( sourceBufferData, vorbisData, sampleCount ); break;
+					default:
+						Q_ASSERT( false );
 					}
 				}
 
