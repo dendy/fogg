@@ -105,36 +105,55 @@ FLAC__bool FlacFormatDevice::flac_eof( const FLAC__StreamDecoder * const decoder
 }
 
 
-template<int channels, typename B>
-static void _processFrameWorker( const FLAC__Frame * const frame, const FLAC__int32 * const buffer[],
-	void * const data, const qint64 sampleCount )
+template<int channelCount, int bytesPerSample>
+static void _processFrameSamples( const FLAC__int32 * const * flacData, char * const rawData, const qint64 sampleCount )
 {
-	B * const b = static_cast<B*>( data );
-	for ( int i = 0; i < sampleCount; ++i )
+	const int channelSampleSize = channelCount * bytesPerSample;
+	for ( int sampleIndex = 0; sampleIndex < sampleCount; ++sampleIndex )
 	{
-		b[ i*channels + 0 ] = buffer[ 0 ][ i ];
-		if ( channels > 1 )
-			b[ i*channels + 1 ] = buffer[ 1 ][ i ];
+		for ( int channelIndex = 0; channelIndex < channelCount; ++channelIndex )
+		{
+			for ( int byteIndex = 0; byteIndex < bytesPerSample; ++byteIndex )
+			{
+				rawData[ sampleIndex*channelSampleSize + channelIndex*bytesPerSample + byteIndex ] =
+						reinterpret_cast<const char*>( flacData[ channelIndex ] + sampleIndex )[ byteIndex ];
+			}
+		}
 	}
 }
 
 
-void FlacFormatDevice::_processFrame( const FLAC__Frame * const frame, const FLAC__int32 * const buffer[],
-	void * const data, const qint64 sampleCount )
+void FlacFormatDevice::_processFrame( const FLAC__int32 * const * flacData, char * const rawData, const qint64 sampleCount )
 {
+	if ( !flacData )
+	{
+		memset( rawData, 0, formatFile_->samplesToBytes( sampleCount ) );
+		return;
+	}
+
 	if ( formatFile_->channels() == 1 )
 	{
-		if ( formatFile_->bitsPerSample() == 8 )
-			_processFrameWorker<1,qint8>( frame, buffer, data, sampleCount );
-		else // if ( formatFile_->bitsPerSample() == 16 )
-			_processFrameWorker<1,qint16>( frame, buffer, data, sampleCount );
+		switch ( formatFile_->bitsPerSample() )
+		{
+		case  8: _processFrameSamples<1,1>( flacData, rawData, sampleCount ); break;
+		case 16: _processFrameSamples<1,2>( flacData, rawData, sampleCount ); break;
+		case 24: _processFrameSamples<1,3>( flacData, rawData, sampleCount ); break;
+		case 32: _processFrameSamples<1,4>( flacData, rawData, sampleCount ); break;
+		default:
+			Q_ASSERT( false );
+		}
 	}
 	else
 	{
-		if ( formatFile_->bitsPerSample() == 8 )
-			_processFrameWorker<2,qint8>( frame, buffer, data, sampleCount );
-		else // if ( formatFile_->bitsPerSample() == 16 )
-			_processFrameWorker<2,qint16>( frame, buffer, data, sampleCount );
+		switch ( formatFile_->bitsPerSample() )
+		{
+		case  8: _processFrameSamples<2,1>( flacData, rawData, sampleCount ); break;
+		case 16: _processFrameSamples<2,2>( flacData, rawData, sampleCount ); break;
+		case 24: _processFrameSamples<2,3>( flacData, rawData, sampleCount ); break;
+		case 32: _processFrameSamples<2,4>( flacData, rawData, sampleCount ); break;
+		default:
+			Q_ASSERT( false );
+		}
 	}
 }
 
@@ -175,7 +194,7 @@ FLAC__StreamDecoderWriteStatus FlacFormatDevice::flac_write( const FLAC__StreamD
 		samplesToReadToBuffer = qMin<qint64>( readMaxSamples, remainSamples );
 		const qint64 bytesToReadToBuffer = flacDevice->formatFile_->samplesToBytes( samplesToReadToBuffer );
 
-		flacDevice->_processFrame( frame, buffer, flacDevice->readData_, samplesToReadToBuffer );
+		flacDevice->_processFrame( buffer, flacDevice->readData_, samplesToReadToBuffer );
 		flacDevice->readBytes_ = bytesToReadToBuffer;
 	}
 
@@ -194,7 +213,7 @@ FLAC__StreamDecoderWriteStatus FlacFormatDevice::flac_write( const FLAC__StreamD
 		for ( int i = 0; i < flacDevice->formatFile_->channels(); ++i )
 			shiftedBuffer[ i ] = buffer[ i ] + samplesToReadToBuffer;
 
-		flacDevice->_processFrame( frame, shiftedBuffer, flacDevice->readCache_.data(), remainSamples );
+		flacDevice->_processFrame( shiftedBuffer, flacDevice->readCache_.data(), remainSamples );
 	}
 
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
@@ -217,8 +236,18 @@ void FlacFormatDevice::flac_metadata( const FLAC__StreamDecoder * const decoder,
 			return;
 
 		// can process only 8 or 16 bits per sample
-		if ( streamInfo.bits_per_sample != 8 && streamInfo.bits_per_sample != 16 )
+		switch ( streamInfo.bits_per_sample )
+		{
+		case 8:
+		case 16:
+		case 24:
+		case 32:
+			// supported
+			break;
+		default:
+			// unsupported
 			return;
+		}
 
 		flacDevice->formatFile_->setResolvedFormat( kFlacFormatName );
 		flacDevice->formatFile_->setChannels( streamInfo.channels );

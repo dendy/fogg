@@ -75,7 +75,7 @@ private:
 	bool _open( const QString & format, bool firstTime );
 	void _close();
 
-	void _processFrame( const FLAC__Frame * frame, const FLAC__int32 * const buffer[], void * data, qint64 samplesCount );
+	void _processFrame( const FLAC__int32 * const * flacData, char * rawData, qint64 sampleCount );
 
 	bool _readTags();
 
