@@ -3,10 +3,7 @@ project( GrimAudioFormatPluginMp3 )
 
 
 # Qt
-set( QT_MIN_VERSION "4.6.0" )
-find_package( Qt4 REQUIRED )
-set( QT_DONT_USE_QTGUI YES )
-include( "${QT_USE_FILE}" )
+find_package( Qt5 REQUIRED Core )
 
 
 # mpg123
@@ -44,7 +41,7 @@ my_add_sources( GrimAudioFormatPluginMp3
 		FormatPluginMp3
 )
 
-qt4_wrap_cpp( GrimAudioFormatPluginMp3_MOC_SOURCES ${GrimAudioFormatPluginMp3_HEADERS} OPTIONS "-nw" )
+qt5_wrap_cpp( GrimAudioFormatPluginMp3_MOC_SOURCES ${GrimAudioFormatPluginMp3_HEADERS} OPTIONS "-nw" )
 
 set( GrimAudioFormatPluginMp3_ALL_SOURCES
 	${GrimAudioFormatPluginMp3_SOURCES}
@@ -54,6 +51,7 @@ set( GrimAudioFormatPluginMp3_ALL_SOURCES
 
 # target
 add_library( GrimAudioFormatPluginMp3 STATIC ${GrimAudioFormatPluginMp3_ALL_SOURCES} )
+target_link_libraries(GrimAudioFormatPluginMp3 Qt5::Core)
 
 if ( UNIX )
 	set_target_properties( GrimAudioFormatPluginMp3 PROPERTIES COMPILE_FLAGS "-fPIC" )

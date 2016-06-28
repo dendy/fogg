@@ -3,10 +3,7 @@ project( GrimAudioFormatPluginWave )
 
 
 # Qt
-set( QT_MIN_VERSION "4.6.0" )
-find_package( Qt4 REQUIRED )
-set( QT_DONT_USE_QTGUI YES )
-include( "${QT_USE_FILE}" )
+find_package( Qt5 REQUIRED Core )
 
 
 set( GrimAudio_FORMAT_PLUGIN_WAVE_ENABLED YES CACHE BOOL "" FORCE )
@@ -22,7 +19,7 @@ my_add_sources( GrimAudioFormatPluginWave
 		FormatPluginWave
 )
 
-qt4_wrap_cpp( GrimAudioFormatPluginWave_MOC_SOURCES ${GrimAudioFormatPluginWave_HEADERS} OPTIONS "-nw" )
+qt5_wrap_cpp( GrimAudioFormatPluginWave_MOC_SOURCES ${GrimAudioFormatPluginWave_HEADERS} OPTIONS "-nw" )
 
 set( GrimAudioFormatPluginWave_ALL_SOURCES
 	${GrimAudioFormatPluginWave_SOURCES}
@@ -32,6 +29,7 @@ set( GrimAudioFormatPluginWave_ALL_SOURCES
 
 # target
 add_library( GrimAudioFormatPluginWave STATIC ${GrimAudioFormatPluginWave_ALL_SOURCES} )
+target_link_libraries(GrimAudioFormatPluginWave Qt5::Core)
 
 if ( UNIX )
 	set_target_properties( GrimAudioFormatPluginWave PROPERTIES COMPILE_FLAGS "-fPIC" )

@@ -8,10 +8,7 @@ set( GrimAudio_GENERATE_FORMAT_PLUGINS_SOURCE_FILE_SCRIPT "${CMAKE_CURRENT_SOURC
 
 
 # Qt
-set( QT_MIN_VERSION "4.6.0" )
-find_package( Qt4 REQUIRED )
-set( QT_DONT_USE_QTGUI YES )
-include( "${QT_USE_FILE}" )
+find_package( Qt5 REQUIRED Core )
 
 
 # options
@@ -137,7 +134,7 @@ if ( GrimAudio_BUILD_FORMATS )
 endif()
 
 
-qt4_wrap_cpp( GrimAudio_MOC_SOURCES ${GrimAudioTools_HEADERS} ${GrimAudioOpenAL_HEADERS} ${GrimAudioFormats_HEADERS} OPTIONS "-nw" )
+qt5_wrap_cpp( GrimAudio_MOC_SOURCES ${GrimAudioTools_HEADERS} ${GrimAudioOpenAL_HEADERS} ${GrimAudioFormats_HEADERS} OPTIONS "-nw" )
 
 set( GrimAudio_ALL_SOURCES ${GrimTools_SOURCES} ${GrimAudioOpenAL_SOURCES} ${GrimAudioFormats_SOURCES} ${GrimAudio_MOC_SOURCES} )
 
@@ -153,7 +150,7 @@ else()
 	set( _library_type "STATIC" )
 endif()
 add_library( GrimAudio ${_library_type} ${GrimAudio_ALL_SOURCES} )
-target_link_libraries( GrimAudio ${QT_LIBRARIES} ${OPENAL_LIBRARY} )
+target_link_libraries( GrimAudio Qt5::Core ${OPENAL_LIBRARY} )
 
 
 # precompiled

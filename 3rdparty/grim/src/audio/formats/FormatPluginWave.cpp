@@ -769,8 +769,3 @@ FormatFile * WaveFormatPlugin::createFile( const QString & fileName, const QStri
 
 } // namespace Audio
 } // namespace Grim
-
-
-
-
-Q_EXPORT_PLUGIN2( grim_audio_wave_format_plugin, Grim::Audio::WaveFormatPlugin )

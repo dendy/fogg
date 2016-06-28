@@ -73,6 +73,8 @@ private:
 
 
 
+#define GRIM_AUDIO_FORMAT_PLUGIN_INTERFACE_IID "ua.org.dendy/Grim/Audio/FormatPlugin/1.0"
+
 class GRIM_AUDIO_EXPORT FormatPlugin
 {
 public:
@@ -94,4 +96,4 @@ public:
 
 
 
-Q_DECLARE_INTERFACE( Grim::Audio::FormatPlugin, "ua.org.dendy/Grim/Audio/FormatPlugin/1.0" )
+Q_DECLARE_INTERFACE( Grim::Audio::FormatPlugin, GRIM_AUDIO_FORMAT_PLUGIN_INTERFACE_IID )

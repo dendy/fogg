@@ -2,6 +2,10 @@
 set( My_FOUND YES )
 
 
+# Qt
+find_package( Qt5 REQUIRED Core LinguistTools )
+
+
 # paths
 get_filename_component( My_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH )
 
@@ -59,10 +63,7 @@ include( "${My_UTIL_SCRIPT}" )
 
 macro( my_create_translation TS_FILE QM_FILE TS_TARGET TS_NO_OBSOLETED_TARGET )
 
-	# check for lupdate and lrelease availability
-	if ( NOT QT_LUPDATE_EXECUTABLE OR NOT QT_LRELEASE_EXECUTABLE )
-		message( FATAL_ERROR "lupdate and lrelease executables not found. Your Qt is probably built with '-nomake tools' option" )
-	endif()
+	cmake_parse_arguments(arg "" "OPTIONS" "" ${ARGN})
 
 	# paths
 	get_filename_component( _qm_dir "${QM_FILE}" PATH )
@@ -79,8 +80,7 @@ macro( my_create_translation TS_FILE QM_FILE TS_TARGET TS_NO_OBSOLETED_TARGET )
 	# rule to generate .pro file
 	set( _pro_file "${_qm_dir}/${_ts_filename_we}.pro" )
 
-	qt4_extract_options( _source_files _lupdate_options ${ARGN} )
-	string( REPLACE ";" ":" _columned_source_files "${_source_files}" )
+	string( REPLACE ";" ":" _columned_source_files "${arg_UNPARSED_ARGUMENTS}" )
 
 	add_custom_command( OUTPUT "${_pro_file}"
 		COMMAND "${CMAKE_COMMAND}"
@@ -95,15 +95,15 @@ macro( my_create_translation TS_FILE QM_FILE TS_TARGET TS_NO_OBSOLETED_TARGET )
 	)
 
 	# rule to lupdate .ts file
-	separate_arguments( _lupdate_options )
-	string( REPLACE ";" ":" _columned_lupdate_options "${_lupdate_options}" )
+	separate_arguments( arg_OPTIONS )
+	string( REPLACE ";" ":" _columned_lupdate_options "${arg_OPTIONS}" )
 
 	add_custom_command( OUTPUT "${_ts_file_target}"
 		COMMAND "${CMAKE_COMMAND}"
 			-D "PRO_FILE=${_pro_file}"
 			-D "TS_FILE_TARGET=${_ts_file_target}"
 			-D "TS_FILE=${TS_FILE}"
-			-D "LUPDATE_COMMAND=${QT_LUPDATE_EXECUTABLE}"
+			-D "LUPDATE_COMMAND=$<TARGET_FILE:Qt5::lupdate>"
 			-D "LUPDATE_OPTIONS=${_columned_lupdate_options}"
 			-D "My_UTIL_SCRIPT=${My_UTIL_SCRIPT}"
 			-P "${My_UPDATE_TS_FILE_SCRIPT}"
@@ -118,7 +118,7 @@ macro( my_create_translation TS_FILE QM_FILE TS_TARGET TS_NO_OBSOLETED_TARGET )
 			-D "PRO_FILE=${_pro_file}"
 			-D "TS_FILE_TARGET=${_ts_file_no_obsoleted_file_target}"
 			-D "TS_FILE=${TS_FILE}"
-			-D "LUPDATE_COMMAND=${QT_LUPDATE_EXECUTABLE}"
+			-D "LUPDATE_COMMAND=$<TARGET_FILE:Qt5::lupdate>"
 			-D "LUPDATE_OPTIONS=${_columned_lupdate_options}:-no-obsolete"
 			-D "My_UTIL_SCRIPT=${My_UTIL_SCRIPT}"
 			-P "${My_UPDATE_TS_FILE_SCRIPT}"
@@ -136,7 +136,7 @@ macro( my_create_translation TS_FILE QM_FILE TS_TARGET TS_NO_OBSOLETED_TARGET )
 		COMMAND
 			"${CMAKE_COMMAND}" -E make_directory "${_qm_dir}"
 		COMMAND
-			"${QT_LRELEASE_EXECUTABLE}" -silent "${TS_FILE}" -qm "${QM_FILE}"
+			"$<TARGET_FILE:Qt5::lrelease>" -silent "${TS_FILE}" -qm "${QM_FILE}"
 		DEPENDS
 			"${TS_FILE}"
 	)

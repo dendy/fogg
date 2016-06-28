@@ -526,8 +526,3 @@ FormatFile * VorbisFormatPlugin::createFile( const QString & fileName, const QSt
 
 } // namespace Audio
 } // namespace Grim
-
-
-
-
-Q_EXPORT_PLUGIN2( grim_audio_vorbis_format_plugin, Grim::Audio::VorbisFormatPlugin )

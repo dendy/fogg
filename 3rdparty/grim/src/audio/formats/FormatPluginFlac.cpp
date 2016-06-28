@@ -821,8 +821,3 @@ FormatFile * FlacFormatPlugin::createFile( const QString & fileName, const QStri
 
 } // namespace Audio
 } // namespace Grim
-
-
-
-
-Q_EXPORT_PLUGIN2( grim_audio_flac_format_plugin, Grim::Audio::FlacFormatPlugin )

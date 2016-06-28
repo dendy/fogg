@@ -3,10 +3,7 @@ project( GrimAudioFormatPluginFlac )
 
 
 # Qt
-set( QT_MIN_VERSION "4.6.0" )
-find_package( Qt4 REQUIRED )
-set( QT_DONT_USE_QTGUI YES )
-include( "${QT_USE_FILE}" )
+find_package( Qt5 REQUIRED Core )
 
 
 # FLAC
@@ -44,7 +41,7 @@ my_add_sources( GrimAudioFormatPluginFlac
 		FormatPluginFlac
 )
 
-qt4_wrap_cpp( GrimAudioFormatPluginFlac_MOC_SOURCES ${GrimAudioFormatPluginFlac_HEADERS} OPTIONS "-nw" )
+qt5_wrap_cpp( GrimAudioFormatPluginFlac_MOC_SOURCES ${GrimAudioFormatPluginFlac_HEADERS} OPTIONS "-nw" )
 
 set( GrimAudioFormatPluginFlac_ALL_SOURCES
 	${GrimAudioFormatPluginFlac_SOURCES}
@@ -54,6 +51,7 @@ set( GrimAudioFormatPluginFlac_ALL_SOURCES
 
 # target
 add_library( GrimAudioFormatPluginFlac STATIC ${GrimAudioFormatPluginFlac_ALL_SOURCES} )
+target_link_libraries(GrimAudioFormatPluginFlac Qt5::Core)
 
 if ( UNIX )
 	set_target_properties( GrimAudioFormatPluginFlac PROPERTIES COMPILE_FLAGS "-fPIC" )

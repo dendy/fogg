@@ -1,5 +1,5 @@
 
-cmake_minimum_required( VERSION 2.8 )
+cmake_minimum_required( VERSION 3.2 )
 
 
 project( Fogg )
@@ -99,11 +99,7 @@ add_subdirectory( "${Fogg_3RDPARTY_DIR}/grim/cmake" "grim" )
 
 
 # Qt
-find_package( Qt4 REQUIRED )
-if ( WIN32 )
-	set( QT_USE_QTMAIN YES )
-endif()
-include( "${QT_USE_FILE}" )
+find_package( Qt5 REQUIRED Widgets )
 
 
 # Ogg/Vorbis, FLAC, mpg123
@@ -184,9 +180,9 @@ my_add_sources( Fogg
 
 
 # generated
-qt4_wrap_cpp( Fogg_MOC_SOURCES ${Fogg_HEADERS} OPTIONS -nw )
-qt4_wrap_ui( Fogg_UI_HEADERS ${Fogg_FORMS} )
-qt4_add_resources( Fogg_RCC_SOURCES ${Fogg_RESOURCES} )
+qt5_wrap_cpp( Fogg_MOC_SOURCES ${Fogg_HEADERS} OPTIONS -nw )
+qt5_wrap_ui( Fogg_UI_HEADERS ${Fogg_FORMS} )
+qt5_add_resources( Fogg_RCC_SOURCES ${Fogg_RESOURCES} )
 
 
 # all sources
@@ -199,7 +195,7 @@ add_executable( Fogg ${Fogg_UI_HEADERS} ${Fogg_ALL_SOURCES} )
 
 
 # link
-target_link_libraries( Fogg ${Grim_LIBRARIES} ${QT_LIBRARIES} ${Vorbis_LIBRARIES} ${Ogg_LIBRARIES} )
+target_link_libraries( Fogg ${Grim_LIBRARIES} Qt5::Widgets ${Vorbis_LIBRARIES} ${Ogg_LIBRARIES} )
 
 
 # precompiled

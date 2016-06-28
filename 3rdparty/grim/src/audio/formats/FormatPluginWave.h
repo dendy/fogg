@@ -101,6 +101,7 @@ class WaveFormatPlugin : public QObject, public FormatPlugin
 {
 	Q_OBJECT
 	Q_INTERFACES( Grim::Audio::FormatPlugin )
+	Q_PLUGIN_METADATA(IID GRIM_AUDIO_FORMAT_PLUGIN_INTERFACE_IID)
 
 public:
 	QStringList formats() const;

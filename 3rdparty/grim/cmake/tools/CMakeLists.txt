@@ -7,10 +7,7 @@ set( GrimTools_DIR "${Grim_ROOT_DIR}/src/tools" )
 
 
 # Qt
-set( QT_MIN_VERSION "4.6.0" )
-find_package( Qt4 REQUIRED )
-set( QT_USE_QTOPENGL YES )
-include( "${QT_USE_FILE}" )
+find_package( Qt5 REQUIRED OpenGL )
 
 
 # OpenGL
@@ -49,7 +46,7 @@ my_add_sources( GrimTools
 		LocalizationManager
 )
 
-qt4_wrap_cpp( GrimTools_MOC_SOURCES ${GrimTools_HEADERS} OPTIONS "-nw" )
+qt5_wrap_cpp( GrimTools_MOC_SOURCES ${GrimTools_HEADERS} OPTIONS "-nw" )
 
 set( GrimTools_ALL_SOURCES ${GrimTools_SOURCES} ${GrimTools_MOC_SOURCES} )
 
@@ -61,7 +58,7 @@ else()
 	set( _library_type "STATIC" )
 endif()
 add_library( GrimTools ${_library_type} ${GrimTools_ALL_SOURCES} )
-target_link_libraries( GrimTools ${QT_LIBRARIES} ${OPENGL_LIBRARIES} )
+target_link_libraries( GrimTools Qt5::OpenGL ${OPENGL_LIBRARIES} )
 if ( WIN32 )
 	target_link_libraries( GrimTools Winmm )
 endif()

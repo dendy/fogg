@@ -618,8 +618,3 @@ FormatFile * Mp3FormatPlugin::createFile( const QString & fileName, const QStrin
 
 } // namespace Audio
 } // namespace Grim
-
-
-
-
-Q_EXPORT_PLUGIN2( grim_audio_mp3_format_plugin, Grim::Audio::Mp3FormatPlugin )

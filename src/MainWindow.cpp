@@ -12,6 +12,7 @@
 #include <QCompleter>
 #include <QDirModel>
 #include <QDesktopWidget>
+#include <QMimeData>
 
 #include <grim/audio/FormatManager.h>
 

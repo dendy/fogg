@@ -18,13 +18,13 @@ Here can be found solution how to build Fogg manually.
 -----------------------
 
 Mandatory:
-  CMake >= 2.8.4  - Build system. http://cmake.org
-  Qt >= 4.7       - Nokia crossplatform C++ library. http://qt.nokia.com
-  Ogg/Vorbis      - Bitstream and audio codec from Xiph.org. http://xiph.org
+  CMake >= 2.8.4 - Build system. http://cmake.org
+  Qt 5.x         - Crossplatform C++ library. http://qt.io
+  Ogg/Vorbis     - Bitstream and audio codec from Xiph.org. http://xiph.org
 
 Optional:
-  FLAC            - Free Loseless Audio Codec. Enables convertion from FLAC audio files.
-  mpg123          - Free MP3 codec library. Enabled conversion from Mp3 audio files.
+  FLAC           - Free Loseless Audio Codec. Enables convertion from FLAC audio files.
+  mpg123         - Free MP3 codec library. Enabled conversion from Mp3 audio files.
 
 
 =======================

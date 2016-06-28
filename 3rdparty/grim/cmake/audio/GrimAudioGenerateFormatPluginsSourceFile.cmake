@@ -39,5 +39,5 @@ file( APPEND "${SOURCE_FILE}"
 
 foreach ( _plugin ${_plugins} )
 	string( TOLOWER "${_plugin}" _plugin_lower )
-	file( APPEND "${SOURCE_FILE}" "Q_IMPORT_PLUGIN( grim_audio_${_plugin_lower}_format_plugin )\n" )
+	file( APPEND "${SOURCE_FILE}" "Q_IMPORT_PLUGIN( ${_plugin}FormatPlugin )\n" )
 endforeach()

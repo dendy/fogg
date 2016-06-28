@@ -3,10 +3,7 @@ project( GrimAudioFormatPluginVorbis )
 
 
 # Qt
-set( QT_MIN_VERSION "4.6.0" )
-find_package( Qt4 REQUIRED )
-set( QT_DONT_USE_QTGUI YES )
-include( "${QT_USE_FILE}" )
+find_package( Qt5 REQUIRED Core )
 
 
 # Ogg & Vorbis
@@ -46,7 +43,7 @@ my_add_sources( GrimAudioFormatPluginVorbis
 		FormatPluginVorbis
 )
 
-qt4_wrap_cpp( GrimAudioFormatPluginVorbis_MOC_SOURCES ${GrimAudioFormatPluginVorbis_HEADERS} OPTIONS "-nw" )
+qt5_wrap_cpp( GrimAudioFormatPluginVorbis_MOC_SOURCES ${GrimAudioFormatPluginVorbis_HEADERS} OPTIONS "-nw" )
 
 set( GrimAudioFormatPluginVorbis_ALL_SOURCES
 	${GrimAudioFormatPluginVorbis_SOURCES}
@@ -56,6 +53,7 @@ set( GrimAudioFormatPluginVorbis_ALL_SOURCES
 
 # target
 add_library( GrimAudioFormatPluginVorbis STATIC ${GrimAudioFormatPluginVorbis_ALL_SOURCES} )
+target_link_libraries(GrimAudioFormatPluginVorbis Qt5::Core)
 
 if ( UNIX )
 	set_target_properties( GrimAudioFormatPluginVorbis PROPERTIES COMPILE_FLAGS "-fPIC" )
