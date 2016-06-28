@@ -97,7 +97,7 @@ private:
 
 
 
-class WaveFormatPlugin : public QObject, FormatPlugin
+class WaveFormatPlugin : public QObject, public FormatPlugin
 {
 	Q_OBJECT
 	Q_INTERFACES( Grim::Audio::FormatPlugin )
