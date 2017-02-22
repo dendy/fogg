@@ -1,0 +1,19 @@
+
+Fogg is a music converter from various audio formats into Ogg/Vorbis.
+
+Designed for a quick audio library deployment from host to mobile music players.
+
+Highlighted features:
+- reencode audio tracks with desired quality to decrease media size
+- adjust target audio track metadata to help media players to properly
+  filter your music library
+- multithreaded decoder/encoder
+- encoding progress display
+
+Currently Fogg accepts next input audio formats:
+- Ogg/Vorbis
+- Mp3
+- Flac
+- Wave
+
+See INSTALL file for building instructions.
